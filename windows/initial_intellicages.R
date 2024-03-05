@@ -153,7 +153,7 @@ if (grepl("Windows", Sys.info()["sysname"])) {
     project_folder <<- NULL
     results_folder <<- NULL
     number_groups <<- NULL
-    intellicage_script <- reactiveVal(NULL)
+    intellicage_script <<- NULL
     unblinding <<- NULL
     
     observeEvent(input$enter_project, {
@@ -161,11 +161,11 @@ if (grepl("Windows", Sys.info()["sysname"])) {
     })
     
     observeEvent(input$project_folder, {
-      project_folder <<- tk_choose.dir()
+      project_folder <<- choose.dir()
     })
     
     observeEvent(input$results_folder, {
-      results_folder <<- tk_choose.dir()
+      results_folder <<- choose.dir()
     })
     
     observeEvent(input$unblinding_file, {
@@ -174,13 +174,7 @@ if (grepl("Windows", Sys.info()["sysname"])) {
     })
     
     observeEvent(input$select_file, {
-      intellicage_script(tk_choose.files(caption = "Select IntelliCage script"))
-    })
-    
-    observe({
-      if (!is.null(intellicage_script())) {
-        assign("intellicage_script", intellicage_script(), envir = .GlobalEnv)
-      }
+      intellicage_script <<- choose.files()
     })
     
     output$group_inputs <- renderUI({
