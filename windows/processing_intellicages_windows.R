@@ -2256,28 +2256,28 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
       counts[[length(counts) + 1]] <- NA
       counts[[length(counts) + 1]] <- NA
     } else {
-      if(all(is.na(results_df[which(results_df$Group == group1_name),variable]))){
+      if(all(is.na(results_df[which(results_df$Group == "A"),variable]))){
         counts <- list(colnames(results_df)[variable])
         counts[[length(counts) + 1]] <- "Please check this variable, there is an issue with your groups"
         results_stats[nrow(results_stats) + 1,] <- counts
         rm(counts)
         next()
       }
-      if(all(is.na(results_df[which(results_df$Group == group2_name),variable]))){
+      if(all(is.na(results_df[which(results_df$Group == "B"),variable]))){
         counts <- list(colnames(results_df)[variable])
         counts[[length(counts) + 1]] <- "Please check this variable, there is an issue with your groups"
         results_stats[nrow(results_stats) + 1,] <- counts
         rm(counts)
         next()
       }
-      if(all(is.na(results_df[which(results_df$Group == group3_name),variable]))){
+      if(all(is.na(results_df[which(results_df$Group == "C"),variable]))){
         counts <- list(colnames(results_df)[variable])
         counts[[length(counts) + 1]] <- "Please check this variable, there is an issue with your groups"
         results_stats[nrow(results_stats) + 1,] <- counts
         rm(counts)
         next()
       }
-      if(all(is.na(results_df[which(results_df$Group == group4_name),variable]))){
+      if(all(is.na(results_df[which(results_df$Group == "D"),variable]))){
         counts <- list(colnames(results_df)[variable])
         counts[[length(counts) + 1]] <- "Please check this variable, there is an issue with your groups"
         results_stats[nrow(results_stats) + 1,] <- counts
