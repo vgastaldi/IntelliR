@@ -48,19 +48,19 @@ project2 <- gsub(".*/([^/]*)/Challenge_1.*", "\\1", project2p)
 
 #### Challenge 1 ####
 read.delim(paste(project_folder2,"/",project2,"/","Challenge_1/Visit.txt",sep="")) -> C1_visits2
-paste(C1_visits2$VisitID,"_set1",sep = "") -> C1_visits2$VisitID
+paste(C1_visits2$VisitID,"_set2",sep = "") -> C1_visits2$VisitID
 read.delim(paste(project_folder2,"/",project2,"/","Challenge_1/Nosepoke.txt",sep="")) -> C1_nosepokes2
-paste(C1_nosepokes2$VisitID,"_set1",sep = "") -> C1_nosepokes2$VisitID
+paste(C1_nosepokes2$VisitID,"_set2",sep = "") -> C1_nosepokes2$VisitID
 #### Challenge 2 ####
 read.delim(paste(project_folder2,"/",project2,"/","Challenge_2/Visit.txt",sep="")) -> C2_visits2
-paste(C2_visits2$VisitID,"_set1",sep = "") -> C2_visits2$VisitID
+paste(C2_visits2$VisitID,"_set2",sep = "") -> C2_visits2$VisitID
 read.delim(paste(project_folder2,"/",project2,"/","Challenge_2/Nosepoke.txt",sep="")) -> C2_nosepokes2
-paste(C2_nosepokes2$VisitID,"_set1",sep = "") -> C2_nosepokes2$VisitID
+paste(C2_nosepokes2$VisitID,"_set2",sep = "") -> C2_nosepokes2$VisitID
 #### Challenge 3 ####
 read.delim(paste(project_folder2,"/",project2,"/","Challenge_3/Visit.txt",sep="")) -> C3_visits2
-paste(C3_visits2$VisitID,"_set1",sep = "") -> C3_visits2$VisitID
+paste(C3_visits2$VisitID,"_set2",sep = "") -> C3_visits2$VisitID
 read.delim(paste(project_folder2,"/",project2,"/","Challenge_3/Nosepoke.txt",sep="")) -> C3_nosepokes2
-paste(C3_nosepokes2$VisitID,"_set1",sep = "") -> C3_nosepokes2$VisitID
+paste(C3_nosepokes2$VisitID,"_set2",sep = "") -> C3_nosepokes2$VisitID
 
 #### Putting all files together ####
 rbind(C1_visits,C1_visits2) -> C1_visits
