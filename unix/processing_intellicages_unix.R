@@ -1,4 +1,4 @@
-## Last modified: 05.03.2024
+## Last modified: 13.08.2024
 #### Loading files #####
 set.seed(0)
 options(digits = 5,scipen = 20)
@@ -1686,6 +1686,8 @@ results_df <- results_df[, column_order]
 write.xlsx(results_df,paste("processedICs_allData_",project,".xlsx",sep=""),colNames = T,rowNames = F,keepNA = F)
 
 #### Removing data for animals that did not drink ####
+# This removes animals that did not drink in specific challenges
+# It keeps their data up until the challenge where it stopped drinking (this one is already changed to NA) 
 total_licks_cols <- grep("Total_Licks$", colnames(results_df))
 total_licks_cols <- total_licks_cols[-c(1,5,14)] # remove habituation and extinction
 findings_df <- data.frame(column = character(0), ID = character(0), stringsAsFactors = FALSE)
@@ -1707,6 +1709,8 @@ write.xlsx(results_df,paste("processedICs_removedNonDrinkers_",project,".xlsx",s
 write.xlsx(findings_df,paste("processedICs_droppedIndividuals_",project,".xlsx",sep=""),colNames = T,rowNames = F,keepNA = F)
 
 #### Corners ####
+# The purpose of this section is to check for possible preference in specific corners
+# This is not an essential part of the analysis itself, but it shows if there are any issues you have to take into account when analyzing the data
 unblinding[,c(1,2)] -> results_corner
 
 #### Corner preference calculation - Total ####
@@ -2086,16 +2090,21 @@ write.xlsx(results_corner,paste("corner_preference_ICs_",project,".xlsx",sep="")
 results_df <- results_df[, !grepl("Light", colnames(results_df))]
 
 #### Statistical Analysis ####
+# The IntelliR script currently supports analysis for 2, 3 or 4 groups
+# It detects how many groups are being used through the variables group"NUMBER"_name
+# The script doesn't require any special formatting and can be applied to different variables without issues
+# You only need the table to start with a column named ID and second named Group.
+
 if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
   # Create a vector of column names for the results data frame
-  column_names <- c("Variable",paste("Number_Animals_",group1_name,sep = ""),paste("Number_Animals_",group2_name,sep = ""),paste("Mean_",group1_name,sep = ""),paste("SD_",group1_name,sep = ""),paste("Mean_",group2_name,sep = ""),paste("SD_",group2_name,sep = ""),paste("Shapiro_",group1_name,sep = ""),paste("Shapiro_",group2_name,sep = ""),"Levene","Statistical test","p-value","Effect size test","Effect size","CI High","CI Low")
+  column_names <- c("Variable",paste("Number_Animals_",group1_name,sep = ""),paste("Number_Animals_",group2_name,sep = ""),paste("Mean_",group1_name,sep = ""),paste("SD_",group1_name,sep = ""),paste("Mean_",group2_name,sep = ""),paste("SD_",group2_name,sep = ""),paste("Shapiro_",group1_name,sep = ""),paste("Shapiro_",group2_name,sep = ""),"Levene","Statistical test","p-value","Statistic name","Statistic Value","Effect size test","Effect size","CI High","CI Low")
   factor(results_df[,"Group"],levels = c(group1_name,group2_name)) -> group
   factor(results_df[,"Group"],levels = c(group1_name,group2_name)) -> results_df[,"Group"]
   # Create the results data frame
   results_stats <- setNames(data.frame(matrix(ncol = length(column_names), nrow = 0)), column_names)
-  
   for (variable in 3:ncol(results_df)){
     counts <- list(colnames(results_df)[variable])
+    # Taking into account when there is no variability for all groups
     if (all(results_df[,variable][!is.na(results_df[,variable])] == results_df[,variable][!is.na(results_df[,variable])][1]) == TRUE){
       counts[[length(counts) + 1]] <- NA
       counts[[length(counts) + 1]] <- NA
@@ -2110,7 +2119,10 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
       counts[[length(counts) + 1]] <- NA
       counts[[length(counts) + 1]] <- NA
       counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
     } else {
+      # For when a group is not represented at all for a specific variable
       if(all(is.na(results_df[which(results_df$Group == group1_name),variable]))){
         counts <- list(colnames(results_df)[variable])
         counts[[length(counts) + 1]] <- "Please check this variable, there is an issue with your groups"
@@ -2139,6 +2151,8 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
       # SD group B
       counts[[length(counts) + 1]] <- sd(results_df[which(results_df$Group == group2_name & !is.na(results_df[,variable])),variable])
       
+      # Taking into account when there is no variability, but group by group
+      # Also tests normality for each group and variance for the variable of interest
       if(all(results_df[which(results_df$Group == group1_name),variable] == results_df[which(results_df$Group == group1_name & !is.na(results_df[,variable])),variable][1])){
         counts[[length(counts) + 1]] <- 1
       } else {
@@ -2151,17 +2165,24 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
       }  
       counts[[length(counts) + 1]] <- leveneTest(results_df[,variable] ~ results_df[,"Group"])$`Pr(>F)`[1]
       # Choosing the appropriate statistical test
+      # In addition to the p-value, test statistic and effect sizes are also registered
       if (counts[[8]] > 0.05 & counts [[9]] > 0.05){
         if  (counts[[10]] > 0.05){
+          # The variable is normally distributed and the variance homogeneous
           counts[[length(counts) + 1]] <- "Two Sample t-test"
           counts[[length(counts) + 1]] <- t.test(results_df[,variable] ~ results_df[,"Group"],var.equal = T)$p.value
+          counts[[length(counts) + 1]] <- "T statistic"
+          counts[[length(counts) + 1]] <- t.test(results_df[,variable] ~ results_df[,"Group"],var.equal = T)$statistic
           counts[[length(counts) + 1]] <- "Cohen's d"
           counts[[length(counts) + 1]] <- effectsize::cohens_d(results_df[,variable] ~ results_df[,"Group"], data = results_df)$Cohens_d
           counts[[length(counts) + 1]] <- effectsize::cohens_d(results_df[,variable] ~ results_df[,"Group"], data = results_df)$CI_high
           counts[[length(counts) + 1]] <- effectsize::cohens_d(results_df[,variable] ~ results_df[,"Group"], data = results_df)$CI_low
         } else {
+          # The variable is normally distributed and the variance heterogeneous
           counts[[length(counts) + 1]] <- "Welch Two Sample t-test"
           counts[[length(counts) + 1]] <- t.test(results_df[,variable] ~ results_df[,"Group"],var.equal = F)$p.value
+          counts[[length(counts) + 1]] <- "T statistic"
+          counts[[length(counts) + 1]] <- t.test(results_df[,variable] ~ results_df[,"Group"],var.equal = T)$statistic
           counts[[length(counts) + 1]] <- "Cohen's d"
           counts[[length(counts) + 1]] <- effectsize::cohens_d(results_df[,variable] ~ results_df[,"Group"], data = results_df,pooled_sd = F)$Cohens_d
           counts[[length(counts) + 1]] <- effectsize::cohens_d(results_df[,variable] ~ results_df[,"Group"], data = results_df,pooled_sd = F)$CI_high
@@ -2169,16 +2190,22 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
         }
       } else {
         if (counts[[10]] > 0.05){
+          # The variable is not normally distributed and the variance homogeneous
           counts[[length(counts) + 1]] <- "Wilcoxon rank sum test with continuity correction"
           counts[[length(counts) + 1]] <- wilcox.test(results_df[,variable] ~ results_df[,"Group"])$p.value
+          counts[[length(counts) + 1]] <- "W statistic"
+          counts[[length(counts) + 1]] <- wilcox.test(results_df[,variable] ~ results_df[,"Group"])$statistic
           counts[[length(counts) + 1]] <- "Cliff's delta"
           effectsize::cliffs_delta(results_df[,variable] ~ results_df[,"Group"]) -> hold_wc
           counts[[length(counts) + 1]] <- hold_wc$r_rank_biserial       
           counts[[length(counts) + 1]] <- hold_wc$CI_high
           counts[[length(counts) + 1]] <- hold_wc$CI_low
         } else {
+          # The variable is not normally distributed and the variance heterogeneous
           counts[[length(counts) + 1]] <- "Wilcoxon rank sum test with continuity correction - Heterogeneous variance"
           counts[[length(counts) + 1]] <- wilcox.test(results_df[,variable] ~ results_df[,"Group"])$p.value
+          counts[[length(counts) + 1]] <- "W statistic"
+          counts[[length(counts) + 1]] <- wilcox.test(results_df[,variable] ~ results_df[,"Group"])$statistic
           counts[[length(counts) + 1]] <- "Cliff's delta"
           effectsize::cliffs_delta(results_df[,variable] ~ results_df[,"Group"]) -> hold_wc
           counts[[length(counts) + 1]] <- hold_wc$r_rank_biserial       
@@ -2190,22 +2217,23 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
     results_stats[nrow(results_stats) + 1,] <- counts
     rm(counts,hold_wc)
   }
-} else {
-  # 4 groups
+} else if (length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 3){
+  # 3 groups
   # Create a vector of column names for the results data frame
-  ## Unfortunately the function for Dunn test ignores the names of groups, so a workaround is required
-  column_names <- c("Variable",paste("Number_Animals_",group1_name,sep = ""),paste("Number_Animals_",group2_name,sep = ""),paste("Number_Animals_",group3_name,sep = ""),paste("Number_Animals_",group4_name,sep = ""),paste("Mean_",group1_name,sep = ""),paste("SD_",group1_name,sep = ""),paste("Mean_",group2_name,sep = ""),paste("SD_",group2_name,sep = ""),paste("Mean_",group3_name,sep = ""),paste("SD_",group3_name,sep = ""),paste("Mean_",group4_name,sep = ""),paste("SD_",group4_name,sep = ""),paste("Shapiro_",group1_name,sep = ""),paste("Shapiro_",group2_name,sep = ""),paste("Shapiro_",group3_name,sep = ""),paste("Shapiro_",group4_name,sep = ""),"Levene","Statistical test","p-value","Effect size test","Effect size","CI High","CI Low","Post-hoc test",paste(group1_name," vs ",group2_name,sep = ""),paste(group1_name," vs ",group3_name,sep = ""),paste(group1_name," vs ",group4_name,sep = ""),paste(group2_name," vs ",group3_name,sep = ""),paste(group2_name," vs ",group4_name,sep = ""),paste(group3_name," vs ",group4_name,sep = ""),"Effect size test post-hoc",paste("Effect size ",group1_name," vs ",group2_name,sep = ""),paste("CI High ",group1_name," vs ",group2_name,sep = ""),paste("CI Low ",group1_name," vs ",group2_name,sep = ""),paste("Effect size ",group1_name," vs ",group3_name,sep = ""),paste("CI High ",group1_name," vs ",group3_name,sep=""),paste("CI Low ",group1_name," vs ",group3_name,sep = ""),paste("Effect size ",group1_name," vs ",group4_name,sep = ""),paste("CI High ",group1_name," vs ",group4_name,sep = ""),paste("CI Low ",group1_name," vs ",group4_name,sep = ""),paste("Effect size ",group2_name," vs ",group3_name,sep = ""),paste("CI High ",group2_name," vs ",group3_name,sep = ""),paste("CI Low ",group2_name," vs ",group3_name,sep = ""),paste("Effect size ",group2_name," vs ",group4_name,sep = ""),paste("CI High ",group2_name," vs ",group4_name,sep = ""),paste("CI Low ",group2_name," vs ",group4_name,sep = ""),paste("Effect size ",group3_name," vs ",group4_name,sep = ""),paste("CI High ",group3_name," vs ",group4_name,sep = ""),paste("CI Low ",group3_name," vs ",group4_name,sep = ""))
+  column_names <- c("Variable",paste("Number_Animals_",group1_name,sep = ""),paste("Number_Animals_",group2_name,sep = ""),paste("Number_Animals_",group3_name,sep = ""),paste("Mean_",group1_name,sep = ""),paste("SD_",group1_name,sep = ""),paste("Mean_",group2_name,sep = ""),paste("SD_",group2_name,sep = ""),paste("Mean_",group3_name,sep = ""),paste("SD_",group3_name,sep = ""),paste("Shapiro_",group1_name,sep = ""),paste("Shapiro_",group2_name,sep = ""),paste("Shapiro_",group3_name,sep = ""),"Levene","Statistical test","p-value","Statistic name","Statistic Value","Effect size test","Effect size","CI High","CI Low","Post-hoc test","Post-hoc statistic",paste(group1_name," vs ",group2_name," p-value",sep = ""),paste(group1_name," vs ",group2_name," statistic",sep = ""),paste(group1_name," vs ",group3_name," p-value",sep = ""),paste(group1_name," vs ",group3_name," statistic",sep = ""),paste(group2_name," vs ",group3_name," p-value",sep = ""),paste(group2_name," vs ",group3_name," statistic",sep = ""),"Effect size test post-hoc",paste("Effect size ",group1_name," vs ",group2_name,sep = ""),paste("CI High ",group1_name," vs ",group2_name,sep = ""),paste("CI Low ",group1_name," vs ",group2_name,sep = ""),paste("Effect size ",group1_name," vs ",group3_name,sep = ""),paste("CI High ",group1_name," vs ",group3_name,sep=""),paste("CI Low ",group1_name," vs ",group3_name,sep = ""),paste("Effect size ",group2_name," vs ",group3_name,sep = ""),paste("CI High ",group2_name," vs ",group3_name,sep = ""),paste("CI Low ",group2_name," vs ",group3_name,sep = ""))
   # Create the results data frame
   results_stats <- setNames(data.frame(matrix(ncol = length(column_names), nrow = 0)), column_names)
   for (variable in 3:ncol(results_df)){
+    ## Unfortunately the function for Conover-Iman test ignores the names of groups, so a workaround is required for the names of the groups
+    # First section guarantees that the comparisons are done in the correct order
     results_df -> bckp
     results_df[which(results_df$Group == group1_name),"Group"] <- "A"
     results_df[which(results_df$Group == group2_name),"Group"] <- "B"
     results_df[which(results_df$Group == group3_name),"Group"] <- "C"
-    results_df[which(results_df$Group == group4_name),"Group"] <- "D"
     factor(results_df[,"Group"]) -> group
     factor(results_df[,"Group"]) -> results_df[,"Group"]
     counts <- list(colnames(results_df)[variable])
+    # Taking into account when there is no variability for all groups
     if (all(results_df[,variable][!is.na(results_df[,variable])] == results_df[,variable][!is.na(results_df[,variable])][1]) == TRUE){
       counts[[length(counts) + 1]] <- NA
       counts[[length(counts) + 1]] <- NA
@@ -2247,16 +2275,8 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
       counts[[length(counts) + 1]] <- NA
       counts[[length(counts) + 1]] <- NA
       counts[[length(counts) + 1]] <- NA
-      counts[[length(counts) + 1]] <- NA
-      counts[[length(counts) + 1]] <- NA
-      counts[[length(counts) + 1]] <- NA
-      counts[[length(counts) + 1]] <- NA
-      counts[[length(counts) + 1]] <- NA
-      counts[[length(counts) + 1]] <- NA
-      counts[[length(counts) + 1]] <- NA
-      counts[[length(counts) + 1]] <- NA
-      counts[[length(counts) + 1]] <- NA
     } else {
+      # General availability check to ensure we can proceed
       if(all(is.na(results_df[which(results_df$Group == "A"),variable]))){
         counts <- list(colnames(results_df)[variable])
         counts[[length(counts) + 1]] <- "Please check this variable, there is an issue with your groups"
@@ -2278,21 +2298,13 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
         rm(counts)
         next()
       }
-      if(all(is.na(results_df[which(results_df$Group == "D"),variable]))){
-        counts <- list(colnames(results_df)[variable])
-        counts[[length(counts) + 1]] <- "Please check this variable, there is an issue with your groups"
-        results_stats[nrow(results_stats) + 1,] <- counts
-        rm(counts)
-        next()
-      }
+      
       # Number of animals group A
       counts[[length(counts) + 1]] <- nrow(results_df[which(results_df$Group == "A" & !is.na(results_df[,variable])),])
       # Number of animals group B
       counts[[length(counts) + 1]] <- nrow(results_df[which(results_df$Group == "B" & !is.na(results_df[,variable])),])
       # Number of animals group C
       counts[[length(counts) + 1]] <- nrow(results_df[which(results_df$Group == "C" & !is.na(results_df[,variable])),])
-      # Number of animals group D
-      counts[[length(counts) + 1]] <- nrow(results_df[which(results_df$Group == "D" & !is.na(results_df[,variable])),])
       # Mean group A
       counts[[length(counts) + 1]] <- mean(results_df[which(results_df$Group == "A" & !is.na(results_df[,variable])),variable])
       # SD group A
@@ -2305,11 +2317,8 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
       counts[[length(counts) + 1]] <- mean(results_df[which(results_df$Group == "C" & !is.na(results_df[,variable])),variable])
       # SD group C
       counts[[length(counts) + 1]] <- sd(results_df[which(results_df$Group == "C" & !is.na(results_df[,variable])),variable])
-      # Mean group D
-      counts[[length(counts) + 1]] <- mean(results_df[which(results_df$Group == "D" & !is.na(results_df[,variable])),variable])
-      # SD group D
-      counts[[length(counts) + 1]] <- sd(results_df[which(results_df$Group == "D" & !is.na(results_df[,variable])),variable])
       
+      # Testing normality for each group  and variance
       if(all(results_df[which(results_df$Group == "A"),variable] == results_df[which(results_df$Group == "A" & !is.na(results_df[,variable])),variable][1])){
         counts[[length(counts) + 1]] <- 1
       } else {
@@ -2325,29 +2334,36 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
       } else {
         counts[[length(counts) + 1]] <- shapiro.test(results_df[which(results_df$Group == "C"),variable])$p.value
       }
-      if(all(results_df[which(results_df$Group == "D"),variable] == results_df[which(results_df$Group == "D" & !is.na(results_df[,variable])),variable][1])){
-        counts[[length(counts) + 1]] <- 1
-      } else {
-        counts[[length(counts) + 1]] <- shapiro.test(results_df[which(results_df$Group == "D"),variable])$p.value
-      }
+      # Testing equality of data variance
       counts[[length(counts) + 1]] <- leveneTest(results_df[,variable] ~ results_df[,"Group"])$`Pr(>F)`[1]
       # Choosing the appropriate statistical test
-      if (counts[[14]] > 0.05 & counts [[15]] > 0.05 & counts [[16]] > 0.05 & counts [[17]] > 0.05){
-        if  (counts[[18]] > 0.05){
+      # In addition to the p-value, test statistic and effect sizes are also registered whenever possible
+      # Same applies to the post-hoc tests
+      if (counts[[11]] > 0.05 & counts [[12]] > 0.05 & counts [[13]] > 0.05){
+        if  (counts[[14]] > 0.05){
+          # If all groups are normally distributed and the variance equal
           counts[[length(counts) + 1]] <- "One-way ANOVA with equal variances"
-          counts[[length(counts) + 1]] <- oneway.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit, var.equal=TRUE)$p.value
+          model <- aov(results_df[,variable] ~ Group, data = results_df)
+          model_summary <- summary(model)  
+          counts[[length(counts) + 1]] <- model_summary[[1]][["Pr(>F)"]][1]
+          counts[[length(counts) + 1]] <- "F value"
+          counts[[length(counts) + 1]] <- model_summary[[1]][["F value"]][1]
+          # Effect size for the group comparison test
           counts[[length(counts) + 1]] <- "Omega Squared"
           counts[[length(counts) + 1]] <-  omega_squared(oneway.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit, var.equal=TRUE))$Omega2
           counts[[length(counts) + 1]] <- omega_squared(oneway.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit, var.equal=TRUE))$CI_high
           counts[[length(counts) + 1]] <- omega_squared(oneway.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit, var.equal=TRUE))$CI_low
-          counts[[length(counts) + 1]] <- "Pairwise T-test - Not paired"
-          pairwise.t.test(results_df[,variable],results_df[,"Group"], data=results_df,paired = F,p.adjust.method = "bonferroni") -> comparison
-          counts[[length(counts) + 1]] <- comparison$p.value[1]
-          counts[[length(counts) + 1]] <- comparison$p.value[2]
-          counts[[length(counts) + 1]] <- comparison$p.value[3]
-          counts[[length(counts) + 1]] <- comparison$p.value[5]
-          counts[[length(counts) + 1]] <- comparison$p.value[6]
-          counts[[length(counts) + 1]] <- comparison$p.value[9]
+          # Perform Tukey's HSD as the post-hoc test extracting p-values and HSD statistic
+          tukey_results <- TukeyHSD(model)
+          counts[[length(counts) + 1]] <- "Tukey's HSD"
+          counts[[length(counts) + 1]] <- "HSD statistic"
+          counts[[length(counts) + 1]] <- tukey_results$Group[, "p adj"][1]
+          counts[[length(counts) + 1]] <- tukey_results$Group[, "diff"][1]
+          counts[[length(counts) + 1]] <- tukey_results$Group[, "p adj"][2]
+          counts[[length(counts) + 1]] <- tukey_results$Group[, "diff"][2]
+          counts[[length(counts) + 1]] <- tukey_results$Group[, "p adj"][3]
+          counts[[length(counts) + 1]] <- tukey_results$Group[, "diff"][3]
+          # Obtain effect sizes for the post-hoc test
           counts[[length(counts) + 1]] <- "Cohen's d"
           results_df[grepl("A|B",results_df$Group),] -> ef_df
           counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
@@ -2357,38 +2373,33 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
           counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
           counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
           counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
-          results_df[grepl("A|D",results_df$Group),] -> ef_df
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
           results_df[grepl("B|C",results_df$Group),] -> ef_df
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
-          results_df[grepl("B|D",results_df$Group),] -> ef_df
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
-          results_df[grepl("C|D",results_df$Group),] -> ef_df
           counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
           counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
           counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
         } else {
+          # If all groups are normally distributed and the variance unequal
           counts[[length(counts) + 1]] <- "One-way ANOVA with unequal variances"
           counts[[length(counts) + 1]] <- oneway.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit, var.equal=FALSE)$p.value
+          counts[[length(counts) + 1]] <- "F value"
+          counts[[length(counts) + 1]] <- as.numeric(oneway.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit, var.equal=FALSE)$statistic)
+          # Effect size for the group comparison test
           counts[[length(counts) + 1]] <- "Omega Squared"
           counts[[length(counts) + 1]] <-  omega_squared(oneway.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit, var.equal=TRUE))$Omega2
           counts[[length(counts) + 1]] <- omega_squared(oneway.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit, var.equal=TRUE))$CI_high
           counts[[length(counts) + 1]] <- omega_squared(oneway.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit, var.equal=TRUE))$CI_low
+          # Perform Games Howell test as the post-hoc test extracting p-values and T-value statistic
           counts[[length(counts) + 1]] <- "Games Howell Test"
+          counts[[length(counts) + 1]] <- "T-value"
           formula <- as.formula(paste(colnames(results_df)[variable], "~ Group"))
           results_df %>% games_howell_test(formula) -> comparison
           counts[[length(counts) + 1]] <- comparison$p.adj[1]
+          counts[[length(counts) + 1]] <- comparison$estimate[1]
           counts[[length(counts) + 1]] <- comparison$p.adj[2]
+          counts[[length(counts) + 1]] <- comparison$estimate[2]
           counts[[length(counts) + 1]] <- comparison$p.adj[3]
-          counts[[length(counts) + 1]] <- comparison$p.adj[4]
-          counts[[length(counts) + 1]] <- comparison$p.adj[5]
-          counts[[length(counts) + 1]] <- comparison$p.adj[6]
+          counts[[length(counts) + 1]] <- comparison$estimate[3]
+          # Obtain effect sizes for the post-hoc test
           counts[[length(counts) + 1]] <- "Cohen's d"
           results_df[grepl("A|B",results_df$Group),] -> ef_df
           counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
@@ -2398,27 +2409,18 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
           counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
           counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
           counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
-          results_df[grepl("A|D",results_df$Group),] -> ef_df
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
           results_df[grepl("B|C",results_df$Group),] -> ef_df
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
-          results_df[grepl("B|D",results_df$Group),] -> ef_df
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
-          results_df[grepl("C|D",results_df$Group),] -> ef_df
           counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
           counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
           counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
         }
       } else {
-        if (counts[[18]] > 0.05){
+        # If at least one group is not normally distributed but the variances are equal
+        if (counts[[14]] > 0.05){
           counts[[length(counts) + 1]] <- "Kruskal-Wallis rank sum test"
           counts[[length(counts) + 1]] <- kruskal.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit)$p.value
+          counts[[length(counts) + 1]] <- "Kruskal-Wallis chi-square"
+          counts[[length(counts) + 1]] <- as.numeric(kruskal.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit)$statistic)
           counts[[length(counts) + 1]] <- "Epsilon-squared"
           
           # Extract the test statistic
@@ -2451,15 +2453,444 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
           ci <- boot.ci(calculated_ep_squared, type = "perc")
           counts[[length(counts) + 1]] <- ci$percent[5]
           counts[[length(counts) + 1]] <- ci$percent[4]
-          
-          dunn.test(results_df[,variable],results_df[,"Group"],method="bonferroni") -> comparison
-          counts[[length(counts) + 1]] <- "Dunn Test"
+          # Perform Conover-Iman test as the post-hoc test extracting p-values and T-value statistic
+          conover.test(results_df[, variable], results_df[, "Group"], method = "bonferroni") -> comparison
+          counts[[length(counts) + 1]] <- "Conover-Iman Test"
+          counts[[length(counts) + 1]] <- "T-values"
           counts[[length(counts) + 1]] <- comparison$P.adjusted[1]
+          counts[[length(counts) + 1]] <- comparison$T[1]
           counts[[length(counts) + 1]] <- comparison$P.adjusted[2]
-          counts[[length(counts) + 1]] <- comparison$P.adjusted[4]
+          counts[[length(counts) + 1]] <- comparison$T[2]
           counts[[length(counts) + 1]] <- comparison$P.adjusted[3]
+          counts[[length(counts) + 1]] <- comparison$T[3]
+          # Obtain effect sizes for the post-hoc test
+          counts[[length(counts) + 1]] <- "Cliff's delta"
+          results_df[grepl("A|B",results_df$Group),] -> ef_df
+          ef_df$Group <- droplevels(ef_df$Group)
+          effectsize::cliffs_delta(ef_df[,variable] ~ ef_df[,"Group"]) -> hold_wc
+          counts[[length(counts) + 1]] <- hold_wc$r_rank_biserial       
+          counts[[length(counts) + 1]] <- hold_wc$CI_high
+          counts[[length(counts) + 1]] <- hold_wc$CI_low
+          results_df[grepl("A|C",results_df$Group),] -> ef_df
+          ef_df$Group <- droplevels(ef_df$Group)
+          effectsize::cliffs_delta(ef_df[,variable] ~ ef_df[,"Group"]) -> hold_wc
+          counts[[length(counts) + 1]] <- hold_wc$r_rank_biserial       
+          counts[[length(counts) + 1]] <- hold_wc$CI_high
+          counts[[length(counts) + 1]] <- hold_wc$CI_low
+          results_df[grepl("B|C",results_df$Group),] -> ef_df
+          ef_df$Group <- droplevels(ef_df$Group)
+          effectsize::cliffs_delta(ef_df[,variable] ~ ef_df[,"Group"]) -> hold_wc
+          counts[[length(counts) + 1]] <- hold_wc$r_rank_biserial       
+          counts[[length(counts) + 1]] <- hold_wc$CI_high
+          counts[[length(counts) + 1]] <- hold_wc$CI_low
+        } else {
+          # If at least one group is not normally distributed and the variances are unequal
+          counts[[length(counts) + 1]] <- "Asymptotic K-Sample Fisher-Pitman Permutation Test"
+          counts[[length(counts) + 1]] <- pvalue(oneway_test(results_df[,variable]~as.factor(results_df[,"Group"])))
+          counts[[length(counts) + 1]] <- "Chi-squared"
+          counts[[length(counts) + 1]] <- statistic(oneway_test(results_df[,variable]~as.factor(results_df[,"Group"])))
+          counts[[length(counts) + 1]] <- "No global effect size test"
+          counts[[length(counts) + 1]] <- NA
+          counts[[length(counts) + 1]] <- NA
+          counts[[length(counts) + 1]] <- NA
+          # fit a linear model
+          factor(results_df[,"Group"]) -> group
+          fit <- lm(results_df[,variable]~ group, data=results_df)
+          # specify the contrasts
+          contrasts <- rbind(c(-1, 1, 0),
+                             c(-1, 0, 1),
+                             c(0, -1, 1))
+          
+          # Assign row names
+          rownames(contrasts) <- c(paste0("A"," vs ","B"),
+                                   paste0("A"," vs ","C"),
+                                   paste0("B"," vs ","C"))
+          
+          # Perform a contrast test as the post-hoc test extracting p-values and T-value statistic
+          summary(glht(fit, linfct = mcp(group = contrasts), alternative = "two.sided"), test = adjusted(type = "bonferroni")) -> comparison
+          counts[[length(counts) + 1]] <- "Simultaneous Tests for General Linear Hypotheses - Multiple Comparisons of Means"
+          counts[[length(counts) + 1]] <- "T-values"
+          counts[[length(counts) + 1]] <- comparison$test$pvalues[1]
+          counts[[length(counts) + 1]] <- comparison$test$tstat[1]
+          counts[[length(counts) + 1]] <- comparison$test$pvalues[2]
+          counts[[length(counts) + 1]] <- comparison$test$tstat[2]
+          counts[[length(counts) + 1]] <- comparison$test$pvalues[3]
+          counts[[length(counts) + 1]] <- comparison$test$tstat[3]
+          # Calculating effect sizes for the post-hoc comparisons
+          (em <- emmeans(fit, specs = ~ group))
+          eff_size(em, sigma = sigma(fit), edf = df.residual(fit)) -> hold_eff
+          hold_eff <- summary(hold_eff)
+          counts[[length(counts) + 1]] <- "Standardized mean difference between groups - Hedges'g"
+          counts[[length(counts) + 1]] <- hold_eff[1,2]
+          counts[[length(counts) + 1]] <- hold_eff[1,6]
+          counts[[length(counts) + 1]] <- hold_eff[1,5]
+          counts[[length(counts) + 1]] <- hold_eff[2,2]
+          counts[[length(counts) + 1]] <- hold_eff[2,6]
+          counts[[length(counts) + 1]] <- hold_eff[2,5]
+          counts[[length(counts) + 1]] <- hold_eff[3,2]
+          counts[[length(counts) + 1]] <- hold_eff[3,6]
+          counts[[length(counts) + 1]] <- hold_eff[3,5]
+        }
+      }
+    }
+    results_stats[nrow(results_stats) + 1,] <- counts
+    bckp -> results_df
+    rm(counts,fit,contrasts,comparison)
+  }
+} else {
+  # 4 groups
+  # Create a vector of column names for the results data frame
+  column_names <- c("Variable",paste("Number_Animals_",group1_name,sep = ""),paste("Number_Animals_",group2_name,sep = ""),paste("Number_Animals_",group3_name,sep = ""),paste("Number_Animals_",group4_name,sep = ""),paste("Mean_",group1_name,sep = ""),paste("SD_",group1_name,sep = ""),paste("Mean_",group2_name,sep = ""),paste("SD_",group2_name,sep = ""),paste("Mean_",group3_name,sep = ""),paste("SD_",group3_name,sep = ""),paste("Mean_",group4_name,sep = ""),paste("SD_",group4_name,sep = ""),paste("Shapiro_",group1_name,sep = ""),paste("Shapiro_",group2_name,sep = ""),paste("Shapiro_",group3_name,sep = ""),paste("Shapiro_",group4_name,sep = ""),"Levene","Statistical test","p-value","Statistic name","Statistic Value","Effect size test","Effect size","CI High","CI Low","Post-hoc test","Post-hoc statistic",paste(group1_name," vs ",group2_name," p-value",sep = ""),paste(group1_name," vs ",group2_name," statistic",sep = ""),paste(group1_name," vs ",group3_name," p-value",sep = ""),paste(group1_name," vs ",group3_name," statistic",sep = ""),paste(group1_name," vs ",group4_name," p-value",sep = ""),paste(group1_name," vs ",group4_name," statistic",sep = ""),paste(group2_name," vs ",group3_name," p-value",sep = ""),paste(group2_name," vs ",group3_name," statistic",sep = ""),paste(group2_name," vs ",group4_name," p-value",sep = ""),paste(group2_name," vs ",group4_name," statistic",sep = ""),paste(group3_name," vs ",group4_name," p-value",sep = ""),paste(group3_name," vs ",group4_name," statistic",sep = ""),paste("CI High ",group1_name," vs ",group3_name,sep=""),paste("CI Low ",group1_name," vs ",group3_name,sep = ""),paste("Effect size ",group1_name," vs ",group4_name,sep = ""),paste("CI High ",group1_name," vs ",group4_name,sep = ""),paste("CI Low ",group1_name," vs ",group4_name,sep = ""),paste("Effect size ",group2_name," vs ",group3_name,sep = ""),paste("CI High ",group2_name," vs ",group3_name,sep = ""),paste("CI Low ",group2_name," vs ",group3_name,sep = ""),paste("Effect size ",group2_name," vs ",group4_name,sep = ""),paste("CI High ",group2_name," vs ",group4_name,sep = ""),paste("CI Low ",group2_name," vs ",group4_name,sep = ""),paste("Effect size ",group3_name," vs ",group4_name,sep = ""),paste("CI High ",group3_name," vs ",group4_name,sep = ""),paste("CI Low ",group3_name," vs ",group4_name,sep = ""))
+  # Create the results data frame
+  results_stats <- setNames(data.frame(matrix(ncol = length(column_names), nrow = 0)), column_names)
+  for (variable in 3:ncol(results_df)){
+    ## Unfortunately the function for Conover-Iman test ignores the names of groups, so a workaround is required for the names of the groups
+    # First section guarantees that the comparisons are done in the correct order
+    results_df -> bckp
+    results_df[which(results_df$Group == group1_name),"Group"] <- "A"
+    results_df[which(results_df$Group == group2_name),"Group"] <- "B"
+    results_df[which(results_df$Group == group3_name),"Group"] <- "C"
+    results_df[which(results_df$Group == group4_name),"Group"] <- "D"
+    factor(results_df[,"Group"]) -> group
+    factor(results_df[,"Group"]) -> results_df[,"Group"]
+    counts <- list(colnames(results_df)[variable])
+    # Taking into account when there is no variability for all groups
+    if (all(results_df[,variable][!is.na(results_df[,variable])] == results_df[,variable][!is.na(results_df[,variable])][1]) == TRUE){
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+      counts[[length(counts) + 1]] <- NA
+    } else {
+      # General availability check to ensure we can proceed
+      if(all(is.na(results_df[which(results_df$Group == "A"),variable]))){
+        counts <- list(colnames(results_df)[variable])
+        counts[[length(counts) + 1]] <- "Please check this variable, there is an issue with your groups"
+        results_stats[nrow(results_stats) + 1,] <- counts
+        rm(counts)
+        next()
+      }
+      if(all(is.na(results_df[which(results_df$Group == "B"),variable]))){
+        counts <- list(colnames(results_df)[variable])
+        counts[[length(counts) + 1]] <- "Please check this variable, there is an issue with your groups"
+        results_stats[nrow(results_stats) + 1,] <- counts
+        rm(counts)
+        next()
+      }
+      if(all(is.na(results_df[which(results_df$Group == "C"),variable]))){
+        counts <- list(colnames(results_df)[variable])
+        counts[[length(counts) + 1]] <- "Please check this variable, there is an issue with your groups"
+        results_stats[nrow(results_stats) + 1,] <- counts
+        rm(counts)
+        next()
+      }
+      if(all(is.na(results_df[which(results_df$Group == "D"),variable]))){
+        counts <- list(colnames(results_df)[variable])
+        counts[[length(counts) + 1]] <- "Please check this variable, there is an issue with your groups"
+        results_stats[nrow(results_stats) + 1,] <- counts
+        rm(counts)
+        next()
+      }
+      
+      # Number of animals group A
+      counts[[length(counts) + 1]] <- nrow(results_df[which(results_df$Group == "A" & !is.na(results_df[,variable])),])
+      # Number of animals group B
+      counts[[length(counts) + 1]] <- nrow(results_df[which(results_df$Group == "B" & !is.na(results_df[,variable])),])
+      # Number of animals group C
+      counts[[length(counts) + 1]] <- nrow(results_df[which(results_df$Group == "C" & !is.na(results_df[,variable])),])
+      # Number of animals group D
+      counts[[length(counts) + 1]] <- nrow(results_df[which(results_df$Group == "D" & !is.na(results_df[,variable])),])
+      # Mean group A
+      counts[[length(counts) + 1]] <- mean(results_df[which(results_df$Group == "A" & !is.na(results_df[,variable])),variable])
+      # SD group A
+      counts[[length(counts) + 1]] <- sd(results_df[which(results_df$Group == "A" & !is.na(results_df[,variable])),variable])
+      # Mean group B
+      counts[[length(counts) + 1]] <- mean(results_df[which(results_df$Group == "B" & !is.na(results_df[,variable])),variable])
+      # SD group B
+      counts[[length(counts) + 1]] <- sd(results_df[which(results_df$Group == "B" & !is.na(results_df[,variable])),variable])
+      # Mean group C
+      counts[[length(counts) + 1]] <- mean(results_df[which(results_df$Group == "C" & !is.na(results_df[,variable])),variable])
+      # SD group C
+      counts[[length(counts) + 1]] <- sd(results_df[which(results_df$Group == "C" & !is.na(results_df[,variable])),variable])
+      # Mean group D
+      counts[[length(counts) + 1]] <- mean(results_df[which(results_df$Group == "D" & !is.na(results_df[,variable])),variable])
+      # SD group D
+      counts[[length(counts) + 1]] <- sd(results_df[which(results_df$Group == "D" & !is.na(results_df[,variable])),variable])
+      
+      # Testing normality for each group and variance
+      if(all(results_df[which(results_df$Group == "A"),variable] == results_df[which(results_df$Group == "A" & !is.na(results_df[,variable])),variable][1])){
+        counts[[length(counts) + 1]] <- 1
+      } else {
+        counts[[length(counts) + 1]] <- shapiro.test(results_df[which(results_df$Group == "A"),variable])$p.value
+      }
+      if(all(results_df[which(results_df$Group == "B"),variable] == results_df[which(results_df$Group == "B" & !is.na(results_df[,variable])),variable][1])){
+        counts[[length(counts) + 1]] <- 1
+      } else {
+        counts[[length(counts) + 1]] <- shapiro.test(results_df[which(results_df$Group == "B"),variable])$p.value
+      }
+      if(all(results_df[which(results_df$Group == "C"),variable] == results_df[which(results_df$Group == "C" & !is.na(results_df[,variable])),variable][1])){
+        counts[[length(counts) + 1]] <- 1
+      } else {
+        counts[[length(counts) + 1]] <- shapiro.test(results_df[which(results_df$Group == "C"),variable])$p.value
+      }
+      if(all(results_df[which(results_df$Group == "D"),variable] == results_df[which(results_df$Group == "D" & !is.na(results_df[,variable])),variable][1])){
+        counts[[length(counts) + 1]] <- 1
+      } else {
+        counts[[length(counts) + 1]] <- shapiro.test(results_df[which(results_df$Group == "D"),variable])$p.value
+      }
+      # Testing equality of data variance
+      counts[[length(counts) + 1]] <- leveneTest(results_df[,variable] ~ results_df[,"Group"])$`Pr(>F)`[1]
+      # Choosing the appropriate statistical test
+      # In addition to the p-value, test statistic and effect sizes are also registered whenever possible
+      # Same applies to the post-hoc tests
+      if (counts[[14]] > 0.05 & counts [[15]] > 0.05 & counts [[16]] > 0.05 & counts [[17]] > 0.05){
+        if  (counts[[18]] > 0.05){
+          # If all groups are normally distributed and the variance equal
+          
+          counts[[length(counts) + 1]] <- "One-way ANOVA with equal variances"
+          model <- aov(results_df[,variable] ~ Group, data = results_df)
+          model_summary <- summary(model)  
+          counts[[length(counts) + 1]] <- model_summary[[1]][["Pr(>F)"]][1]
+          counts[[length(counts) + 1]] <- "F value"
+          counts[[length(counts) + 1]] <- model_summary[[1]][["F value"]][1]
+          # Effect size for the group comparison test
+          counts[[length(counts) + 1]] <- "Omega Squared"
+          counts[[length(counts) + 1]] <-  omega_squared(oneway.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit, var.equal=TRUE))$Omega2
+          counts[[length(counts) + 1]] <- omega_squared(oneway.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit, var.equal=TRUE))$CI_high
+          counts[[length(counts) + 1]] <- omega_squared(oneway.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit, var.equal=TRUE))$CI_low
+          # Perform Tukey's HSD test extracting p-values and HSD statistic
+          tukey_results <- TukeyHSD(model)
+          counts[[length(counts) + 1]] <- "Tukey's HSD"
+          counts[[length(counts) + 1]] <- "HSD statistic"
+          counts[[length(counts) + 1]] <- tukey_results$Group[, "p adj"][1]
+          counts[[length(counts) + 1]] <- tukey_results$Group[, "diff"][1]
+          counts[[length(counts) + 1]] <- tukey_results$Group[, "p adj"][2]
+          counts[[length(counts) + 1]] <- tukey_results$Group[, "diff"][2]
+          counts[[length(counts) + 1]] <- tukey_results$Group[, "p adj"][3]
+          counts[[length(counts) + 1]] <- tukey_results$Group[, "diff"][3]
+          counts[[length(counts) + 1]] <- tukey_results$Group[, "p adj"][4]
+          counts[[length(counts) + 1]] <- tukey_results$Group[, "diff"][4]
+          counts[[length(counts) + 1]] <- tukey_results$Group[, "p adj"][5]
+          counts[[length(counts) + 1]] <- tukey_results$Group[, "diff"][5]
+          counts[[length(counts) + 1]] <- tukey_results$Group[, "p adj"][6]
+          counts[[length(counts) + 1]] <- tukey_results$Group[, "diff"][6]
+          # Obtain effect sizes for the post-hoc test
+          counts[[length(counts) + 1]] <- "Cohen's d"
+          results_df[grepl("A|B",results_df$Group),] -> ef_df
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
+          results_df[grepl("A|C",results_df$Group),] -> ef_df
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
+          results_df[grepl("A|D",results_df$Group),] -> ef_df
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
+          results_df[grepl("B|C",results_df$Group),] -> ef_df
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
+          results_df[grepl("B|D",results_df$Group),] -> ef_df
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
+          results_df[grepl("C|D",results_df$Group),] -> ef_df
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
+        } else {
+          # If all groups are normally distributed and the variance unequal
+          counts[[length(counts) + 1]] <- "One-way ANOVA with unequal variances"
+          counts[[length(counts) + 1]] <- oneway.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit, var.equal=FALSE)$p.value
+          counts[[length(counts) + 1]] <- "F value"
+          counts[[length(counts) + 1]] <- as.numeric(oneway.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit, var.equal=FALSE)$statistic)
+          # Effect size for the group comparison test
+          counts[[length(counts) + 1]] <- "Omega Squared"
+          counts[[length(counts) + 1]] <-  omega_squared(oneway.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit, var.equal=TRUE))$Omega2
+          counts[[length(counts) + 1]] <- omega_squared(oneway.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit, var.equal=TRUE))$CI_high
+          counts[[length(counts) + 1]] <- omega_squared(oneway.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit, var.equal=TRUE))$CI_low
+          # Perform Games Howell test as the post-hoc test extracting p-values and T-value statistic
+          counts[[length(counts) + 1]] <- "Games Howell Test"
+          counts[[length(counts) + 1]] <- "T-value"
+          formula <- as.formula(paste(colnames(results_df)[variable], "~ Group"))
+          results_df %>% games_howell_test(formula) -> comparison
+          counts[[length(counts) + 1]] <- comparison$p.adj[1]
+          counts[[length(counts) + 1]] <- comparison$estimate[1]
+          counts[[length(counts) + 1]] <- comparison$p.adj[2]
+          counts[[length(counts) + 1]] <- comparison$estimate[2]
+          counts[[length(counts) + 1]] <- comparison$p.adj[3]
+          counts[[length(counts) + 1]] <- comparison$estimate[3]
+          counts[[length(counts) + 1]] <- comparison$p.adj[4]
+          counts[[length(counts) + 1]] <- comparison$estimate[4]
+          counts[[length(counts) + 1]] <- comparison$p.adj[5]
+          counts[[length(counts) + 1]] <- comparison$estimate[5]
+          counts[[length(counts) + 1]] <- comparison$p.adj[6]
+          counts[[length(counts) + 1]] <- comparison$estimate[7]
+          # Obtain effect sizes for the post-hoc test
+          counts[[length(counts) + 1]] <- "Cohen's d"
+          results_df[grepl("A|B",results_df$Group),] -> ef_df
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
+          results_df[grepl("A|C",results_df$Group),] -> ef_df
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
+          results_df[grepl("A|D",results_df$Group),] -> ef_df
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
+          results_df[grepl("B|C",results_df$Group),] -> ef_df
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
+          results_df[grepl("B|D",results_df$Group),] -> ef_df
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
+          results_df[grepl("C|D",results_df$Group),] -> ef_df
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
+          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
+        }
+      } else {
+        # If at least one group is not normally distributed but the variances are equal
+        if (counts[[18]] > 0.05){
+          counts[[length(counts) + 1]] <- "Kruskal-Wallis rank sum test"
+          counts[[length(counts) + 1]] <- kruskal.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit)$p.value
+          counts[[length(counts) + 1]] <- "Kruskal-Wallis chi-square"
+          counts[[length(counts) + 1]] <- as.numeric(kruskal.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit)$statistic)
+          counts[[length(counts) + 1]] <- "Epsilon-squared"
+          
+          # Extract the test statistic
+          H <- kruskal.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit)$statistic
+          
+          # Calculate the sample size
+          n <- sum(table(results_df[, "Group"]),na.rm = T)
+          
+          # Calculate Epsilon-squared
+          epsilon_squared_calc <- 1 - (n - 1) * H / (n * (n + 1))
+          
+          counts[[length(counts) + 1]] <- epsilon_squared_calc <- 1 - (n - 1) * H / (n * (n + 1))
+          epsilon_squared_func <- function(data, indices) {
+            # Extract the resampled data
+            data_resampled <- data[indices, ]
+            
+            # Perform a Kruskal-Wallis test
+            result <- kruskal.test(as.numeric(data_resampled[, variable]) ~ data_resampled[, "Group"])
+            
+            # Extract the test statistic
+            H <- result$statistic
+            
+            # Calculate the sample size
+            n <- sum(table(data_resampled[, "Group"]))
+            
+            # Calculate Epsilon-squared
+            1 - (n - 1) * H / (n * (n + 1))
+          }
+          calculated_ep_squared <- boot(results_df,epsilon_squared_func, R = 1000)
+          ci <- boot.ci(calculated_ep_squared, type = "perc")
+          counts[[length(counts) + 1]] <- ci$percent[5]
+          counts[[length(counts) + 1]] <- ci$percent[4]
+          # Perform Conover-Iman test as the post-hoc test extracting p-values and T-value statistic
+          conover.test(results_df[,variable],results_df[,"Group"],method="bonferroni") -> comparison
+          counts[[length(counts) + 1]] <- "Conover-Iman Test"
+          counts[[length(counts) + 1]] <- "T-values"
+          counts[[length(counts) + 1]] <- comparison$P.adjusted[1]
+          counts[[length(counts) + 1]] <- comparison$T[1]
+          counts[[length(counts) + 1]] <- comparison$P.adjusted[2]
+          counts[[length(counts) + 1]] <- comparison$T[2]
+          counts[[length(counts) + 1]] <- comparison$P.adjusted[4]
+          counts[[length(counts) + 1]] <- comparison$T[4]
+          counts[[length(counts) + 1]] <- comparison$P.adjusted[3]
+          counts[[length(counts) + 1]] <- comparison$T[3]
           counts[[length(counts) + 1]] <- comparison$P.adjusted[5]
+          counts[[length(counts) + 1]] <- comparison$T[5]
           counts[[length(counts) + 1]] <- comparison$P.adjusted[6]
+          counts[[length(counts) + 1]] <- comparison$T[6]
+          # Obtain effect sizes for the post-hoc test
           counts[[length(counts) + 1]] <- "Cliff's delta"
           results_df[grepl("A|B",results_df$Group),] -> ef_df
           ef_df$Group <- droplevels(ef_df$Group)
@@ -2498,8 +2929,11 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
           counts[[length(counts) + 1]] <- hold_wc$CI_high
           counts[[length(counts) + 1]] <- hold_wc$CI_low
         } else {
+          # If at least one group is not normally distributed and the variances are unequal
           counts[[length(counts) + 1]] <- "Asymptotic K-Sample Fisher-Pitman Permutation Test"
           counts[[length(counts) + 1]] <- pvalue(oneway_test(results_df[,variable]~as.factor(results_df[,"Group"])))
+          counts[[length(counts) + 1]] <- "Chi-squared"
+          counts[[length(counts) + 1]] <- statistic(oneway_test(results_df[,variable]~as.factor(results_df[,"Group"])))
           counts[[length(counts) + 1]] <- "No global effect size test"
           counts[[length(counts) + 1]] <- NA
           counts[[length(counts) + 1]] <- NA
@@ -2523,15 +2957,23 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
                                    paste0("B"," vs ","D"),
                                    paste0("C"," vs ","D"))
           
-          # perform the contrast test
+          # Perform a contrast test as the post-hoc test extracting p-values and T-value statistic
           summary(glht(fit, linfct = mcp(group = contrasts), alternative = "two.sided"), test = adjusted(type = "bonferroni")) -> comparison
           counts[[length(counts) + 1]] <- "Simultaneous Tests for General Linear Hypotheses - Multiple Comparisons of Means"
+          counts[[length(counts) + 1]] <- "T-values"
           counts[[length(counts) + 1]] <- comparison$test$pvalues[1]
+          counts[[length(counts) + 1]] <- comparison$test$tstat[1]
           counts[[length(counts) + 1]] <- comparison$test$pvalues[2]
+          counts[[length(counts) + 1]] <- comparison$test$tstat[2]
           counts[[length(counts) + 1]] <- comparison$test$pvalues[3]
+          counts[[length(counts) + 1]] <- comparison$test$tstat[3]
           counts[[length(counts) + 1]] <- comparison$test$pvalues[4]
+          counts[[length(counts) + 1]] <- comparison$test$tstat[4]
           counts[[length(counts) + 1]] <- comparison$test$pvalues[5]
+          counts[[length(counts) + 1]] <- comparison$test$tstat[5]
           counts[[length(counts) + 1]] <- comparison$test$pvalues[6]
+          counts[[length(counts) + 1]] <- comparison$test$tstat[6]
+          # Calculating effect sizes for the post-hoc comparisons
           (em <- emmeans(fit, specs = ~ group))
           eff_size(em, sigma = sigma(fit), edf = df.residual(fit)) -> hold_eff
           hold_eff <- summary(hold_eff)
@@ -2716,7 +3158,6 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 4){
     results_df[,c(1,2,variable)] -> df
     colnames(df)[3] <- "Variable1"
     measurement_plotted <- colnames(results_df)[variable]
-    # Assuming your data frame is called df
     # Remove rows with NAs in Variable1
     df <- df %>% filter(!is.na(Variable1))
     if(nrow(df) == 0){
