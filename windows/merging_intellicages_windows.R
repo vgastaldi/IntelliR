@@ -4,11 +4,6 @@
 ## Example: Each one of our computers handles two cages. When running we end up with two different files and these should be merged.
 ## The files have to be organized in the way explained in the general readme. They are saved back to the correct format/organization and ready for processing.
 
-### Possible questions:
-## Do Visit ID and Nosepoke ID have to be reworked?
-## Are there changes required for the other script?
-# Likely the answer here is no. The IntelliCage script works only with Animal IDs and the visits associated with them.
-
 #### Loading first set of cages ####
 ## Select your Visit.txt file for Challenge 1
 file.choose() -> project1
