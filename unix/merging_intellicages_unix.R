@@ -114,11 +114,11 @@ dir.create(paste(project_merged,"/","Challenge_2/",sep=""))
 dir.create(paste(project_merged,"/","Challenge_3/",sep=""))
 
 #### Challenge 1 ####
-write.table(C1_visits,paste(project_folder2,"/",project_merged,"/","Challenge_1/Visit.txt",sep=""),col.names = T,row.names = F,quote = F,sep = "\t")
-write.table(C1_nosepokes,paste(project_folder2,"/",project_merged,"/","Challenge_1/Nosepoke.txt",sep=""),col.names = T,row.names = F,quote = F,sep = "\t")
+write.table(C1_visits,paste(project_folder,"/",project_merged,"/","Challenge_1/Visit.txt",sep=""),col.names = T,row.names = F,quote = F,sep = "\t")
+write.table(C1_nosepokes,paste(project_folder,"/",project_merged,"/","Challenge_1/Nosepoke.txt",sep=""),col.names = T,row.names = F,quote = F,sep = "\t")
 #### Challenge 2 ####
-write.table(C2_visits,paste(project_folder2,"/",project_merged,"/","Challenge_2/Visit.txt",sep=""),col.names = T,row.names = F,quote = F,sep = "\t")
-write.table(C2_nosepokes,paste(project_folder2,"/",project_merged,"/","Challenge_2/Nosepoke.txt",sep=""),col.names = T,row.names = F,quote = F,sep = "\t")
+write.table(C2_visits,paste(project_folder,"/",project_merged,"/","Challenge_2/Visit.txt",sep=""),col.names = T,row.names = F,quote = F,sep = "\t")
+write.table(C2_nosepokes,paste(project_folder,"/",project_merged,"/","Challenge_2/Nosepoke.txt",sep=""),col.names = T,row.names = F,quote = F,sep = "\t")
 #### Challenge 3 ####
-write.table(C3_visits,paste(project_folder2,"/",project_merged,"/","Challenge_3/Visit.txt",sep=""),col.names = T,row.names = F,quote = F,sep = "\t")
-write.table(C3_nosepokes,paste(project_folder2,"/",project_merged,"/","Challenge_3/Nosepoke.txt",sep=""),col.names = T,row.names = F,quote = F,sep = "\t")
+write.table(C3_visits,paste(project_folder,"/",project_merged,"/","Challenge_3/Visit.txt",sep=""),col.names = T,row.names = F,quote = F,sep = "\t")
+write.table(C3_nosepokes,paste(project_folder,"/",project_merged,"/","Challenge_3/Nosepoke.txt",sep=""),col.names = T,row.names = F,quote = F,sep = "\t")
