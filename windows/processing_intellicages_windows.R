@@ -3036,7 +3036,7 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 4){
       spacing <- max(df_summary$mean + df_summary$sd) * 0.04 # Set spacing between comparison bars to 15% of maximum value
       
       # Get the p-values from the stats table
-      as.numeric(results_stats[which(results_stats$Variable == measurement_plotted),26:31]) -> p_values
+      as.numeric(results_stats[which(results_stats$Variable == measurement_plotted),c(29,31,33,35,37,39)]) -> p_values
       if (!is.na(p_values)[1]){
         # Define a function to format the p-value annotations
         format_pvalue <- function(p) {
@@ -3076,6 +3076,103 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 4){
           annotate("text",x=mean(c(2,4)),y=y_pos+spacing*4+spacing/2,label=format_pvalue(p_values[5]),parse=T,size=4)+ # Increase size of p-value text
           geom_segment(aes(x=3,xend=4,y=y_pos+spacing*5,yend=y_pos+spacing*5))+
           annotate("text",x=mean(c(3,4)),y=y_pos+spacing*5+spacing/2,label=format_pvalue(p_values[6]),parse=T,size=4)+ # Increase size of p-value text
+          theme_minimal()+ # Apply theme_minimal()
+          theme(axis.title.x=element_blank(), # Suppress the X axis label
+                axis.title.y=element_text(size=14,face="bold"), # Increase size of Y axis label and make it bold
+                axis.text=element_text(size=12), # Increase size of axis text
+                axis.text.x = element_text(face = "bold"), # Make the group names bold
+                legend.position="none", # Suppress the legend
+                panel.grid.major.x = element_blank()) + # Remove background vertical lines
+          ylab(measurement_plotted) # Set the Y axis label to the value of measurement_plotted
+        ggsave(paste(measurement_plotted,".png",sep = ""), p, width = 10, height = 10, dpi = 600)
+      } else {
+        next()
+      }
+    }
+  }
+} else if (length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 3) {
+  for (variable in 3:ncol(results_df)){
+    results_df[,c(1,2,variable)] -> df
+    colnames(df)[3] <- "Variable1"
+    measurement_plotted <- colnames(results_df)[variable]
+    # Remove rows with NAs in Variable1
+    df <- df %>% filter(!is.na(Variable1))
+    if(nrow(df) == 0){
+      next()
+    } else {
+      # Create a named vector with the desired mapping
+      group_map <- setNames(c(1, 2, 3), c(get("group1_name"), get("group2_name"), get("group3_name")))
+      
+      # Use the match function to find the index of the Group column values in the group_map vector
+      df$Group <- match(df$Group, names(group_map))
+      
+      # Use the as.numeric function to convert the index values into numeric values
+      df$Group <- as.numeric(df$Group)
+      
+      # Create a new column for group name
+      df <- df %>%
+        rowwise() %>%
+        mutate(name = get(paste0("group", as.numeric(Group), "_name"))) %>%
+        ungroup()
+      
+      # Group by Group and calculate mean and standard deviation of Variable1
+      df_summary <- df %>%
+        group_by(Group) %>%
+        summarize(mean = mean(Variable1), sd = sd(Variable1))
+      
+      # Create a new column for group color
+      df_summary <- df_summary %>%
+        rowwise() %>%
+        mutate(color = get(paste0("group", as.numeric(Group), "_color"))) %>%
+        ungroup()
+      
+      # Create a new column for group name
+      df_summary <- df_summary %>%
+        rowwise() %>%
+        mutate(name = get(paste0("group", as.numeric(Group), "_name"))) %>%
+        ungroup()
+      
+      # Calculate the y position of the comparison bars
+      y_pos <- max(df_summary$mean + df_summary$sd) * 1.05 # Set y position of comparison bars to 10% above maximum value
+      
+      # Set the spacing between the comparison bars
+      spacing <- max(df_summary$mean + df_summary$sd) * 0.04 # Set spacing between comparison bars to 15% of maximum value
+      
+      # Get the p-values from the stats table
+      as.numeric(results_stats[which(results_stats$Variable == measurement_plotted),c(25,27,29)]) -> p_values
+      if (!is.na(p_values)[1]){
+        # Define a function to format the p-value annotations
+        format_pvalue <- function(p) {
+          if (p >= 0.001 & p <= 0.05) {
+            return(paste0("bold('p = ", round(p, digits = 3), "')"))
+          } else if (p < 0.001){
+            return(paste0("bold('p < 0.001')"))
+          } else if (p < 1 & p > 0.05) {
+            return(paste0("'p = ", round(p, digits = 3), "'"))
+          } else {
+            return("'p > 0.999'")
+          }
+        }
+        
+        df_summary$name <- factor(df_summary$name,levels = c(group1_name,group2_name,group3_name))
+        # Plot the data using ggplot
+        p <- ggplot(df_summary, aes(x = name, y = mean, fill = name)) +
+          # Add the bars
+          geom_bar(stat = "identity", position = position_dodge(), color="black") + # Add black outline around bars
+          # Add the error bars
+          geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd), width = .2, position = position_dodge(.9)) +
+          # Add the dots representing the individual observations
+          geom_point(data=df,aes(x=name,y=Variable1),position=position_jitter(width=0.2,height=0),size=3)+
+          # Set the fill scale manually
+          scale_fill_manual(values = unique(df_summary$color), labels = unique(df_summary$name)) +
+          scale_color_manual(values = unique(df_summary$color), labels = unique(df_summary$name)) +
+          # Add comparison bars and p-value annotations for each pair of groups you want to compare
+          geom_segment(aes(x=1,xend=2,y=y_pos,yend=y_pos))+
+          annotate("text",x=mean(c(1,2)),y=y_pos+spacing/2,label=format_pvalue(p_values[1]),parse=T,size=4)+ # Increase size of p-value text
+          geom_segment(aes(x=1,xend=3,y=y_pos+spacing,yend=y_pos+spacing))+
+          annotate("text",x=mean(c(1,3)),y=y_pos+spacing+spacing/2,label=format_pvalue(p_values[2]),parse=T,size=4)+ # Increase size of p-value text
+          geom_segment(aes(x=1,xend=4,y=y_pos+spacing*2,yend=y_pos+spacing*2))+
+          annotate("text",x=mean(c(1,4)),y=y_pos+spacing*2+spacing/2,label=format_pvalue(p_values[3]),parse=T,size=4)+ # Increase size of p-value text
           theme_minimal()+ # Apply theme_minimal()
           theme(axis.title.x=element_blank(), # Suppress the X axis label
                 axis.title.y=element_text(size=14,face="bold"), # Increase size of Y axis label and make it bold
