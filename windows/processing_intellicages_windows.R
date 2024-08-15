@@ -1,4 +1,4 @@
-## Last modified: 13.08.2024
+## Last modified: 15.08.2024
 #### Loading files #####
 set.seed(0)
 options(digits = 5,scipen = 20)
@@ -2986,46 +2986,6 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 4){
   colors <- c(group1_color,group2_color)
 }
 
-#### Learning curves ####
-for (i in unique(DA_progression$Challenge)){
-  DA_progression[which(DA_progression$Challenge == i),] -> df
-  
-  df[which(df$Number_DAs <= 100),] -> df
-  
-  # Set the desired slope and intercept for the artificial line
-  slope <- 0.25
-  intercept <- 0 # You can change this value to set a different intercept
-  
-  # Create a new data frame with the x-values for the artificial line
-  x_range <- range(df$Number_DAs)
-  artificial_data <- data.frame(Number_DAs = seq(x_range[1], x_range[2], length.out = max(df$Number_DAs)))
-  
-  # Generate the y-values for the artificial line directly using the desired slope and intercept
-  artificial_data$Success_DAs <- intercept + slope * artificial_data$Number_DAs
-  
-  # Create a line plot of Success_DAs vs Number_DAs, colored by Project and grouped by ID
-  p <- ggplot(df, aes(x = Number_DAs, y = Success_DAs, color = Group, group = ID)) +
-    geom_line(alpha = 0.65) +
-    geom_smooth(aes(group = Group),method = "lm", formula = y ~ x - 1, se = TRUE, level = 0.95, size = 1.5, alpha = 0.8) + # aes(group = Project, fill = Project)
-    scale_color_manual(values = colors) +
-    geom_line(data = artificial_data, aes(x = Number_DAs, y = Success_DAs, group = NULL), color = "black", linetype = "dashed", linewidth = 1.5) +
-    scale_x_continuous(expand = c(0, 0), limits = c(0, 102.5),breaks = seq(50, max(df$Number_DAs), by = 50)) +
-    scale_y_continuous(expand = c(0, 0), limits = c(0, NA),breaks = seq(10, max(df$Success_DAs), by = 10)) +
-    theme_minimal() + 
-    theme(
-      axis.title = element_text(size = 30, face = "bold"),
-      axis.text = element_text(size = 26),
-      plot.title = element_text(size = 1),
-      axis.line = element_line(),
-      axis.ticks = element_line(color = "black", linewidth = 0.5),
-      axis.ticks.length = unit(0.1, "cm")
-    ) +
-    xlab("Drinking Attempts") +
-    ylab("Successful Drinking Attempts") +
-    labs(title = i) + theme(legend.position = "none")
-  ggsave(paste("learning_curve_",i,".png",sep = ""), p, width = 30, height = 25, units = "cm")
-}
-
 #### General statistics ####
 if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 4){
   for (variable in 3:ncol(results_df)){
@@ -3237,4 +3197,44 @@ for (variable in seq(3,110,4)){
     xlab(NULL) +
     scale_fill_discrete(name = "Corner Preference", labels = c("Corner 1", "Corner 2", "Corner 3", "Corner 4"))
   ggsave(paste(gsub("[0-9]Preference", "_Preference", colnames(results_corner)[variable]), "_",project,".png",sep=""),p,dpi = 600,width = 40,height = 15,units = "cm")
+}
+
+#### Plotting Learning curves ####
+for (i in unique(DA_progression$Challenge)){
+  DA_progression[which(DA_progression$Challenge == i),] -> df
+  
+  df[which(df$Number_DAs <= 100),] -> df
+  
+  # Set the desired slope and intercept for the artificial line
+  slope <- 0.25
+  intercept <- 0 # You can change this value to set a different intercept
+  
+  # Create a new data frame with the x-values for the artificial line
+  x_range <- range(df$Number_DAs)
+  artificial_data <- data.frame(Number_DAs = seq(x_range[1], x_range[2], length.out = max(df$Number_DAs)))
+  
+  # Generate the y-values for the artificial line directly using the desired slope and intercept
+  artificial_data$Success_DAs <- intercept + slope * artificial_data$Number_DAs
+  
+  # Create a line plot of Success_DAs vs Number_DAs, colored by Project and grouped by ID
+  p <- ggplot(df, aes(x = Number_DAs, y = Success_DAs, color = Group, group = ID)) +
+    geom_line(alpha = 0.65) +
+    geom_smooth(aes(group = Group),method = "lm", formula = y ~ x - 1, se = TRUE, level = 0.95, size = 1.5, alpha = 0.8) + # aes(group = Project, fill = Project)
+    scale_color_manual(values = colors) +
+    geom_line(data = artificial_data, aes(x = Number_DAs, y = Success_DAs, group = NULL), color = "black", linetype = "dashed", linewidth = 1.5) +
+    scale_x_continuous(expand = c(0, 0), limits = c(0, 102.5),breaks = seq(50, max(df$Number_DAs), by = 50)) +
+    scale_y_continuous(expand = c(0, 0), limits = c(0, NA),breaks = seq(10, max(df$Success_DAs), by = 10)) +
+    theme_minimal() + 
+    theme(
+      axis.title = element_text(size = 30, face = "bold"),
+      axis.text = element_text(size = 26),
+      plot.title = element_text(size = 1),
+      axis.line = element_line(),
+      axis.ticks = element_line(color = "black", linewidth = 0.5),
+      axis.ticks.length = unit(0.1, "cm")
+    ) +
+    xlab("Drinking Attempts") +
+    ylab("Successful Drinking Attempts") +
+    labs(title = i) + theme(legend.position = "none")
+  ggsave(paste("learning_curve_",i,".png",sep = ""), p, width = 30, height = 25, units = "cm")
 }
