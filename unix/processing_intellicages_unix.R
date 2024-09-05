@@ -3316,7 +3316,7 @@ for (i in unique(DA_progression$Challenge)){
   # Create a line plot of Success_DAs vs Number_DAs, colored by Project and grouped by ID
   p <- ggplot(df, aes(x = Number_DAs, y = Success_DAs, color = Group, group = ID)) +
     geom_line(alpha = 0.65) +
-    geom_smooth(aes(group = Group),method = "lm", formula = y ~ x - 1, se = TRUE, level = 0.95, size = 1.5, alpha = 0.8) + # aes(group = Project, fill = Project)
+    geom_smooth(aes(group = Group),method = "lm", formula = y ~ x - 1, se = TRUE, level = 0.95, linewidth = 1.5, alpha = 0.8) + # aes(group = Project, fill = Project)
     scale_color_manual(values = colors) +
     geom_line(data = artificial_data, aes(x = Number_DAs, y = Success_DAs, group = NULL), color = "black", linetype = "dashed", linewidth = 1.5) +
     scale_x_continuous(expand = c(0, 0), limits = c(0, 102.5),breaks = seq(50, max(df$Number_DAs), by = 50)) +
