@@ -1,4 +1,4 @@
-## Last modified: 05.09.2024
+## Last modified: 07.09.2024
 #### Loading files #####
 set.seed(0)
 options(digits = 5,scipen = 20)
@@ -322,7 +322,7 @@ for (animal in all_animals) {
     # Subset the data frame based on each individual animal
     subset_df <- subset(visits_df, Animal == animal)
     
-    # Calculate the total number of visits, nosepokes, and licks
+    # Calculate the exploratory visits and drinking attempts
     total_exploratory_visits <- ifelse(nrow(subset_df) == 0, NA, nrow(subset_df[which(subset_df$NosepokeNumber == 0),]))
     total_drinking_attempts <- ifelse(nrow(subset_df) == 0, NA, nrow(subset_df[which(subset_df$NosepokeNumber != 0),]))
     
@@ -365,7 +365,7 @@ for (animal in all_animals) {
     # Subset the data frame based on each individual animal
     subset_df <- subset(visits_df, Animal == animal & Light_Status == "Light")
     
-    # Calculate the total number of visits, nosepokes, and licks
+    # Calculate the exploratory visits and drinking attempts
     light_exploratory_visits <- ifelse(nrow(subset_df) == 0, NA, nrow(subset_df[which(subset_df$NosepokeNumber == 0),]))
     light_drinking_attempts <- ifelse(nrow(subset_df) == 0, NA, nrow(subset_df[which(subset_df$NosepokeNumber != 0),]))
     
@@ -408,7 +408,7 @@ for (animal in all_animals) {
     # Subset the data frame based on each individual animal
     subset_df <- subset(visits_df, Animal == animal & Light_Status == "Dark")
     
-    # Calculate the total number of visits, nosepokes, and licks
+    # Calculate the exploratory visits and drinking attempts
     dark_exploratory_visits <- ifelse(nrow(subset_df) == 0, NA, nrow(subset_df[which(subset_df$NosepokeNumber == 0),]))
     dark_drinking_attempts <- ifelse(nrow(subset_df) == 0, NA, nrow(subset_df[which(subset_df$NosepokeNumber != 0),]))
     
