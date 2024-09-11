@@ -1,0 +1,13 @@
+DateTime	Category	Type	Cage	Corner	Side	Notes
+2020-03-14 15:35:44.478	Info	Application				Session is started
+2020-03-14 15:36:03.728	Warning	Antenna	2	1		Unregistered tag 200000194856
+2020-03-14 15:36:13.547	Warning	Antenna	2	1		Unregistered tag 200000194856
+2020-03-14 15:36:18.383	Warning	Antenna	2	1		Unregistered tag 200000194856
+2020-03-14 19:39:12.644	Warning	Presence	2	4		Presence signal without antenna registration.
+2020-03-14 22:38:16.868	Error	Nosepoke	1	4	7	Lickometer overdue.
+2020-03-14 23:31:36.233	Error	Nosepoke	2	2	3	Lickometer overdue.
+2020-03-15 00:29:41.755	Warning	Lickometer	2	4	8	Lickometer is active but nosepoke is inactive
+2020-03-15 00:36:54.021	Warning	Presence	2	3		Presence signal without antenna registration.
+2020-03-15 03:36:54.380	Warning	Animal				2020-03-15 03:36: 900200000196653 (Animal 33) did not make any visits during last 720 minutes.
+2020-03-15 15:35:04.068	Warning	Animal				2020-03-15 15:35: 900200000196653 (Animal 33) did not drink during 1439 minutes after experiment was started.
+2020-03-15 15:35:49.237	Info	Application				Session is stopped
