@@ -1,0 +1,2 @@
+Group	NumberOfAnimals	InitialModule	TotalNumberOfVisits	TotalDurationOfVisits	AverageNumberOfVisits	AverageDurationOfVisits	GroupNotes
+Default	33	Default	7495	98748.168	227	2992.36872727273	Default animals group

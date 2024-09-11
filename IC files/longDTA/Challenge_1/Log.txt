@@ -1,0 +1,44 @@
+DateTime	Category	Type	Cage	Corner	Side	Notes
+2022-09-25 14:19:27.819	Info	Application				Session is started
+2022-09-25 21:10:06.107	Warning	Presence	1	2		Presence signal without antenna registration.
+2022-09-25 22:34:56.481	Warning	Presence	2	3		Presence signal without antenna registration.
+2022-09-26 00:42:43.496	Warning	Presence	2	2		Presence signal without antenna registration.
+2022-09-26 05:55:42.185	Warning	Presence	1	4		Presence signal without antenna registration.
+2022-09-26 06:51:52.914	Warning	Presence	2	4		Presence signal without antenna registration.
+2022-09-26 07:14:51.951	Warning	Presence	2	3		Presence signal without antenna registration.
+2022-09-26 07:56:41.014	Warning	Presence	2	4		Presence signal without antenna registration.
+2022-09-26 17:08:38.521	Warning	Presence	1	1		Presence signal without antenna registration.
+2022-09-26 17:29:25.954	Warning	Presence	2	2		Presence signal without antenna registration.
+2022-09-26 19:51:07.228	Warning	Presence	1	3		Presence signal without antenna registration.
+2022-09-26 20:13:48.553	Warning	Presence	1	2		Presence signal without antenna registration.
+2022-09-26 20:50:32.623	Warning	Presence	2	2		Presence signal without antenna registration.
+2022-09-26 22:06:58.817	Warning	Presence	2	3		Presence signal without antenna registration.
+2022-09-26 22:29:57.554	Warning	Presence	1	3		Presence signal without antenna registration.
+2022-09-26 23:10:12.903	Warning	Presence	1	1		Presence signal without antenna registration.
+2022-09-27 00:44:35.950	Warning	Presence	1	1		Presence signal without antenna registration.
+2022-09-27 01:40:27.569	Warning	Presence	2	2		Presence signal without antenna registration.
+2022-09-27 02:10:10.606	Warning	Lickometer	2	2	3	Lickometer is active without corresponding visit and nosepoke.
+2022-09-27 02:10:10.609	Warning	Lickometer	2	2	4	Lickometer is active without corresponding visit and nosepoke.
+2022-09-27 02:10:11.546	Warning	Lickometer	2	2	3	Lickometer is active without corresponding visit and nosepoke.
+2022-09-27 02:10:11.564	Warning	Lickometer	2	2	4	Lickometer is active without corresponding visit and nosepoke.
+2022-09-27 03:39:35.554	Warning	Presence	2	3		Presence signal without antenna registration.
+2022-09-27 03:55:28.200	Warning	Presence	2	4		Presence signal without antenna registration.
+2022-09-27 04:00:46.130	Warning	Presence	2	3		Presence signal without antenna registration.
+2022-09-27 18:30:51.584	Warning	Presence	1	2		Presence signal without antenna registration.
+2022-09-27 18:49:43.051	Warning	Presence	1	1		Presence signal without antenna registration.
+2022-09-27 18:55:29.080	Warning	Presence	2	4		Presence signal without antenna registration.
+2022-09-27 20:41:56.210	Warning	Presence	2	4		Presence signal without antenna registration.
+2022-09-27 21:13:45.437	Warning	Presence	2	2		Presence signal without antenna registration.
+2022-09-28 00:53:34.615	Warning	Presence	2	4		Presence signal without antenna registration.
+2022-09-28 04:58:25.306	Warning	Presence	2	2		Presence signal without antenna registration.
+2022-09-28 19:02:09.903	Warning	Presence	1	2		Presence signal without antenna registration.
+2022-09-28 21:39:36.178	Warning	Presence	2	2		Presence signal without antenna registration.
+2022-09-28 21:45:04.331	Warning	Presence	2	4		Presence signal without antenna registration.
+2022-09-28 21:50:11.621	Warning	Presence	1	2		Presence signal without antenna registration.
+2022-09-28 23:57:45.628	Warning	Presence	1	1		Presence signal without antenna registration.
+2022-09-29 00:09:08.529	Error	Application	2	1		Communication error detected
+2022-09-29 00:09:18.746	Error	Application	2	1		Communication error reset
+2022-09-29 00:25:28.630	Warning	Presence	2	3		Presence signal without antenna registration.
+2022-09-29 03:55:33.837	Warning	Presence	1	2		Presence signal without antenna registration.
+2022-09-29 05:44:20.725	Warning	Presence	1	4		Presence signal without antenna registration.
+2022-09-29 11:44:49.057	Info	Application				Session is stopped

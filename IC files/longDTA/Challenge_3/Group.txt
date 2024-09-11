@@ -1,0 +1,10 @@
+Group	NumberOfAnimals	InitialModule	TotalNumberOfVisits	TotalDurationOfVisits	AverageNumberOfVisits	AverageDurationOfVisits	GroupNotes
+Default	0	Default	0	0	0	0	Default animals group
+Group1A	5	4 Extinction start	2601	20956.955	520	4191.39100000001	
+Group1B	4	4 Extinction start	2649	25272.117	662	6318.02925000001	
+Group1C	4	4 Extinction start	3060	26519.613	765	6629.90324999999	
+Group1D	4	4 Extinction start	1993	17771.331	498	4442.83275	
+Group2A	5	4 Extinction start	2606	22182.997	521	4436.59939999999	
+Group2B	4	4 Extinction start	2288	20158.153	572	5039.53825	
+Group2C	4	4 Extinction start	3331	27602.665	832	6900.66625	
+Group2D	4	4 Extinction start	2341	21340.065	585	5335.01625	

@@ -1,4 +1,4 @@
-## Last modified: 07.09.2024
+## Last modified: 10.09.2024
 #### Loading files #####
 set.seed(0)
 options(digits = 5,scipen = 20)
@@ -322,7 +322,8 @@ for (animal in all_animals) {
     # Subset the data frame based on each individual animal
     subset_df <- subset(visits_df, Animal == animal)
     
-    # Calculate the exploratory visits and drinking attempts    total_exploratory_visits <- ifelse(nrow(subset_df) == 0, NA, nrow(subset_df[which(subset_df$NosepokeNumber == 0),]))
+    # Calculate the exploratory visits and drinking attempts
+    total_exploratory_visits <- ifelse(nrow(subset_df) == 0, NA, nrow(subset_df[which(subset_df$NosepokeNumber == 0),]))
     total_drinking_attempts <- ifelse(nrow(subset_df) == 0, NA, nrow(subset_df[which(subset_df$NosepokeNumber != 0),]))
     
     # Add the counts to the counts list

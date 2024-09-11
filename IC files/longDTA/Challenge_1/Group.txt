@@ -1,0 +1,10 @@
+Group	NumberOfAnimals	InitialModule	TotalNumberOfVisits	TotalDurationOfVisits	AverageNumberOfVisits	AverageDurationOfVisits	GroupNotes
+Default	0	Default	0	0	0	0	Default animals group
+Group1A	5	1 NP habituation D1	2201	20907.3400000001	440	4181.46800000001	
+Group1B	4	1 NP habituation D1	2112	23127.231	528	5781.80775	
+Group1C	4	1 NP habituation D1	2192	22959.884	548	5739.971	
+Group1D	4	1 NP habituation D1	2081	18638.953	520	4659.73824999999	
+Group2A	5	1 NP habituation D1	2823	35769.4579999999	564	7153.89159999999	
+Group2B	4	1 NP habituation D1	2451	29833.4869999999	612	7458.37174999999	
+Group2C	4	1 NP habituation D1	3707	36164.109	926	9041.02724999999	
+Group2D	4	1 NP habituation D1	2519	28050.566	629	7012.64149999999	

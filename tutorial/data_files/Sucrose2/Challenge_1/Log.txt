@@ -1,0 +1,32 @@
+DateTime	Category	Type	Cage	Corner	Side	Notes
+2020-03-16 15:55:45.157	Info	Application				Session is started
+2020-03-16 15:55:45.889	Warning	Lickometer	2	4	8	Lickometer is active but nosepoke is inactive
+2020-03-16 17:25:12.392	Warning	Lickometer	2	4	7	Lickometer is active but nosepoke is inactive
+2020-03-16 17:25:13.744	Warning	Lickometer	2	4	7	Lickometer is active but nosepoke is inactive
+2020-03-16 17:25:15.250	Warning	Lickometer	2	4	7	Lickometer is active but nosepoke is inactive
+2020-03-16 17:25:15.651	Warning	Lickometer	2	4	7	Lickometer is active but nosepoke is inactive
+2020-03-16 18:19:36.770	Warning	Lickometer	1	4	8	Lickometer is active but nosepoke is inactive
+2020-03-16 18:28:16.679	Warning	Presence	1	2		Presence signal without antenna registration.
+2020-03-16 18:34:12.443	Warning	Lickometer	1	3	5	Lickometer is active but nosepoke is inactive
+2020-03-16 18:50:07.073	Error	Nosepoke	2	4	7	Lickometer overdue.
+2020-03-16 19:03:50.165	Error	Nosepoke	2	4	7	Lickometer overdue.
+2020-03-16 19:58:57.438	Error	Nosepoke	2	1	1	Lickometer overdue.
+2020-03-16 21:00:15.600	Warning	Lickometer	2	4	7	Lickometer is active but nosepoke is inactive
+2020-03-16 21:32:31.153	Warning	Lickometer	1	4	7	Lickometer is active but nosepoke is inactive
+2020-03-16 21:32:31.393	Warning	Lickometer	1	4	7	Lickometer is active but nosepoke is inactive
+2020-03-16 21:32:32.131	Warning	Lickometer	1	4	7	Lickometer is active but nosepoke is inactive
+2020-03-16 21:32:33.647	Warning	Lickometer	1	4	7	Lickometer is active but nosepoke is inactive
+2020-03-16 21:32:34.642	Warning	Lickometer	1	4	7	Lickometer is active but nosepoke is inactive
+2020-03-16 21:32:37.851	Warning	Lickometer	1	4	7	Lickometer is active but nosepoke is inactive
+2020-03-16 21:32:38.628	Warning	Lickometer	1	4	7	Lickometer is active but nosepoke is inactive
+2020-03-16 22:54:07.125	Error	Nosepoke	1	4	7	Lickometer overdue.
+2020-03-16 22:58:03.211	Warning	Lickometer	1	4	7	Lickometer is active but nosepoke is inactive
+2020-03-16 23:03:08.294	Warning	Presence	1	4		Presence signal without antenna registration.
+2020-03-16 23:29:47.378	Error	Nosepoke	1	4	7	Lickometer overdue.
+2020-03-16 23:30:57.727	Warning	Lickometer	1	1	1	Lickometer is active but nosepoke is inactive
+2020-03-17 00:33:33.058	Error	Nosepoke	2	1	2	Lickometer overdue.
+2020-03-17 03:55:55.029	Warning	Animal				2020-03-17 03:55: 900200000196653 (Animal 33) did not make any visits during 720 minutes after experiment was started.
+2020-03-17 05:02:55.040	Error	Nosepoke	2	4	7	Lickometer overdue.
+2020-03-17 05:48:46.878	Error	Nosepoke	1	1	1	Lickometer overdue.
+2020-03-17 13:52:44.220	Warning	Lickometer	1	1	1	Lickometer is active but nosepoke is inactive
+2020-03-17 15:55:54.777	Info	Application				Session is stopped

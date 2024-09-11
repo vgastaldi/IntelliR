@@ -1,0 +1,51 @@
+DateTime	Category	Type	Cage	Corner	Side	Notes
+2022-09-29 12:41:00.257	Info	Application				Session is started
+2022-09-29 14:13:47.868	Warning	Presence	1	4		Presence signal without antenna registration.
+2022-09-29 15:44:19.336	Warning	Presence	2	4		Presence signal without antenna registration.
+2022-09-29 16:41:48.107	Warning	Presence	1	1		Presence signal without antenna registration.
+2022-09-29 18:12:07.832	Warning	Presence	1	4		Presence signal without antenna registration.
+2022-09-29 18:38:45.771	Warning	Presence	2	4		Presence signal without antenna registration.
+2022-09-29 19:53:44.571	Warning	Presence	1	4		Presence signal without antenna registration.
+2022-09-29 23:35:01.050	Warning	Presence	2	4		Presence signal without antenna registration.
+2022-09-29 23:46:50.533	Warning	Presence	2	4		Presence signal without antenna registration.
+2022-09-30 01:05:51.238	Warning	Presence	2	3		Presence signal without antenna registration.
+2022-09-30 02:09:27.846	Warning	Presence	2	3		Presence signal without antenna registration.
+2022-09-30 02:28:00.828	Warning	Presence	2	4		Presence signal without antenna registration.
+2022-09-30 03:31:11.523	Warning	Presence	1	4		Presence signal without antenna registration.
+2022-09-30 05:19:24.639	Warning	Presence	1	1		Presence signal without antenna registration.
+2022-09-30 08:33:11.065	Warning	Presence	2	4		Presence signal without antenna registration.
+2022-09-30 12:55:51.665	Warning	Presence	2	4		Presence signal without antenna registration.
+2022-09-30 13:40:16.183	Warning	Presence	2	3		Presence signal without antenna registration.
+2022-09-30 18:20:08.205	Warning	Presence	2	4		Presence signal without antenna registration.
+2022-09-30 19:57:24.246	Warning	Presence	2	3		Presence signal without antenna registration.
+2022-10-01 02:12:09.687	Warning	Presence	1	2		Presence signal without antenna registration.
+2022-10-01 04:16:48.771	Warning	Presence	1	4		Presence signal without antenna registration.
+2022-10-01 04:17:04.009	Warning	Presence	1	3		Presence signal without antenna registration.
+2022-10-01 04:40:36.401	Warning	Presence	2	1		Presence signal without antenna registration.
+2022-10-01 04:56:25.884	Warning	Presence	1	2		Presence signal without antenna registration.
+2022-10-01 10:05:40.500	Warning	Presence	2	4		Presence signal without antenna registration.
+2022-10-01 20:25:15.892	Warning	Presence	1	3		Presence signal without antenna registration.
+2022-10-01 22:09:04.007	Error	Nosepoke	2	1	1	Lickometer overdue.
+2022-10-01 22:10:38.789	Error	Application	2	2		Communication error detected
+2022-10-01 22:10:49.005	Error	Application	2	2		Communication error reset
+2022-10-01 22:20:21.063	Warning	Lickometer	2	4	8	Lickometer is active without corresponding visit and nosepoke.
+2022-10-01 22:20:43.883	Warning	Lickometer	2	3	5	Lickometer is active without corresponding visit and nosepoke.
+2022-10-01 22:20:44.167	Warning	Lickometer	2	3	5	Lickometer is active without corresponding visit and nosepoke.
+2022-10-01 22:26:58.267	Error	Nosepoke	2	4	7	Lickometer overdue.
+2022-10-01 22:35:02.174	Warning	Presence	1	1		Presence signal without antenna registration.
+2022-10-02 03:58:19.425	Warning	Presence	2	2		Presence signal without antenna registration.
+2022-10-02 04:51:00.192	Warning	Presence	2	4		Presence signal without antenna registration.
+2022-10-02 04:56:07.672	Warning	Presence	1	2		Presence signal without antenna registration.
+2022-10-02 19:03:43.785	Warning	Presence	2	3		Presence signal without antenna registration.
+2022-10-02 20:22:53.583	Warning	Presence	1	2		Presence signal without antenna registration.
+2022-10-02 21:49:21.527	Warning	Presence	2	4		Presence signal without antenna registration.
+2022-10-02 23:33:40.414	Warning	Presence	2	3		Presence signal without antenna registration.
+2022-10-02 23:54:57.502	Warning	Presence	2	3		Presence signal without antenna registration.
+2022-10-03 02:51:58.859	Warning	Presence	2	4		Presence signal without antenna registration.
+2022-10-03 04:45:46.440	Warning	Presence	1	3		Presence signal without antenna registration.
+2022-10-03 23:05:14.966	Warning	Presence	2	1		Presence signal without antenna registration.
+2022-10-04 00:20:28.789	Warning	Presence	1	2		Presence signal without antenna registration.
+2022-10-04 01:48:56.767	Warning	Presence	2	1		Presence signal without antenna registration.
+2022-10-04 03:52:24.490	Warning	Presence	2	2		Presence signal without antenna registration.
+2022-10-04 04:15:57.715	Warning	Presence	2	3		Presence signal without antenna registration.
+2022-10-04 13:54:11.078	Info	Application				Session is stopped

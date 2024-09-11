@@ -1,0 +1,11 @@
+DateTime	Category	Type	Cage	Corner	Side	Notes
+2020-03-16 15:56:28.411	Info	Application				Session is started
+2020-03-16 18:06:51.551	Warning	Presence	2	3		Presence signal without antenna registration.
+2020-03-16 18:50:35.800	Warning	Presence	2	3		Presence signal without antenna registration.
+2020-03-16 19:30:18.173	Error	Nosepoke	2	3	5	Lickometer overdue.
+2020-03-16 19:36:47.163	Warning	Presence	1	4		Presence signal without antenna registration.
+2020-03-16 21:43:24.296	Error	Nosepoke	2	4	7	Lickometer overdue.
+2020-03-16 21:49:04.967	Warning	Presence	2	4		Presence signal without antenna registration.
+2020-03-17 03:56:28.684	Warning	Animal				2020-03-17 03:56: 900200000196653 (Animal 33) did not make any visits during 720 minutes after experiment was started.
+2020-03-17 08:49:27.554	Warning	Presence	2	1		Presence signal without antenna registration.
+2020-03-17 15:56:34.379	Info	Application				Session is stopped
