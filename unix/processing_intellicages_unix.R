@@ -1,4 +1,4 @@
-## Last modified: 10.09.2024
+## Last modified: 13.11.2024
 #### Loading files #####
 set.seed(0)
 options(digits = 5,scipen = 20)
@@ -603,7 +603,7 @@ results_df <- merge(results_df,results,by.x = 1,by.y = 1,all.x = T)
 # Get the names of all objects that will be used for this variable
 visits_objects <- ls(pattern = "_visits$")
 # Reorder to follow the challenges
-visits_objects <- visits_objects[c(3,4)]
+visits_objects <- visits_objects[c(1,2,3,4)]
 visits_objects[!is.na(visits_objects)] -> visits_objects  
 
 # Create a vector of column names for the results data frame
@@ -1044,17 +1044,17 @@ for (animal in all_animals) {
     counts[[length(counts) + 1]] <- NA
   } else if (sum(subset_dfCCW2$LickNumber) == 0) {
     subset_dfCCW2[which(subset_dfCCW2$CornerCondition == "Correct"),9][1] -> correct_corner_CCW2_nolicks
-      if (is.na(correct_corner_CCW2_nolicks)){
-        DE_CCW2 <- NA
-      }
-      else if (correct_corner_CCW2_nolicks == 1){
-        DE_CCW2 <- nrow(subset_dfCCW2[which(subset_dfCCW2$Corner == 2 & subset_dfCCW2$NosepokeNumber > 0),])
+    if (is.na(correct_corner_CCW2_nolicks)){
+      DE_CCW2 <- NA
+    }
+    else if (correct_corner_CCW2_nolicks == 1){
+      DE_CCW2 <- nrow(subset_dfCCW2[which(subset_dfCCW2$Corner == 2 & subset_dfCCW2$NosepokeNumber > 0),])
     } else if (correct_corner_CCW2_nolicks == 2){
-        DE_CCW2 <- nrow(subset_dfCCW2[which(subset_dfCCW2$Corner == 3 & subset_dfCCW2$NosepokeNumber > 0),])
+      DE_CCW2 <- nrow(subset_dfCCW2[which(subset_dfCCW2$Corner == 3 & subset_dfCCW2$NosepokeNumber > 0),])
     } else if (correct_corner_CCW2_nolicks == 3){
-        DE_CCW2 <- nrow(subset_dfCCW2[which(subset_dfCCW2$Corner == 4 & subset_dfCCW2$NosepokeNumber > 0),])
+      DE_CCW2 <- nrow(subset_dfCCW2[which(subset_dfCCW2$Corner == 4 & subset_dfCCW2$NosepokeNumber > 0),])
     } else if (correct_corner_CCW2_nolicks == 4){
-        DE_CCW2 <- nrow(subset_dfCCW2[which(subset_dfCCW2$Corner == 1 & subset_dfCCW2$NosepokeNumber > 0),])
+      DE_CCW2 <- nrow(subset_dfCCW2[which(subset_dfCCW2$Corner == 1 & subset_dfCCW2$NosepokeNumber > 0),])
     }
     # Place Error - CCW2
     counts[[length(counts) + 1]] <- (nrow(subset_dfCCW2[which(subset_dfCCW2$CornerCondition == "Incorrect" & subset_dfCCW2$NosepokeNumber > 0),])-DE_CCW2)/nrow(subset_dfCCW2[which(subset_dfCCW2$NosepokeNumber > 0),])
@@ -1194,14 +1194,14 @@ for (animal in all_animals) {
       if (is.na(correct_corner_CCW1_nolicks)){
         DE_CCW1 <- NA
       }  
-        else if (correct_corner_CCW1_nolicks == 1){
-          DE_CCW1 <- nrow(subset_df[which(subset_df$Corner == 2 & subset_df$NosepokeNumber > 0 & subset_df$Light_Status == "Dark"),])
+      else if (correct_corner_CCW1_nolicks == 1){
+        DE_CCW1 <- nrow(subset_df[which(subset_df$Corner == 2 & subset_df$NosepokeNumber > 0 & subset_df$Light_Status == "Dark"),])
       } else if (correct_corner_CCW1_nolicks == 2){
-          DE_CCW1 <- nrow(subset_df[which(subset_df$Corner == 3 & subset_df$NosepokeNumber > 0 & subset_df$Light_Status == "Dark"),])
+        DE_CCW1 <- nrow(subset_df[which(subset_df$Corner == 3 & subset_df$NosepokeNumber > 0 & subset_df$Light_Status == "Dark"),])
       } else if (correct_corner_CCW1_nolicks == 3){
-          DE_CCW1 <- nrow(subset_df[which(subset_df$Corner == 4 & subset_df$NosepokeNumber > 0 & subset_df$Light_Status == "Dark"),])
+        DE_CCW1 <- nrow(subset_df[which(subset_df$Corner == 4 & subset_df$NosepokeNumber > 0 & subset_df$Light_Status == "Dark"),])
       } else if (correct_corner_CCW1_nolicks == 4){
-          DE_CCW1 <- nrow(subset_df[which(subset_df$Corner == 1 & subset_df$NosepokeNumber > 0 & subset_df$Light_Status == "Dark"),])
+        DE_CCW1 <- nrow(subset_df[which(subset_df$Corner == 1 & subset_df$NosepokeNumber > 0 & subset_df$Light_Status == "Dark"),])
       }
       # Place Error - CCW1
       counts[[length(counts) + 1]] <- (nrow(subset_df[which(subset_df$CornerCondition == "Incorrect" & subset_df$NosepokeNumber > 0 & subset_df$Light_Status == "Dark"),])-DE_CCW1)/nrow(subset_df[which(subset_df$NosepokeNumber > 0 & subset_df$Light_Status == "Dark"),])
@@ -1275,17 +1275,17 @@ for (animal in all_animals) {
     counts[[length(counts) + 1]] <- NA
   } else if (sum(subset_dfCCW2$LickNumber) == 0) {
     subset_dfCCW2[which(subset_dfCCW2$CornerCondition == "Correct"),9][1] -> correct_corner_CCW2_nolicks
-      if (is.na(correct_corner_CCW2_nolicks)){
-        DE_CCW2 <- NA
-      }
-      else if (correct_corner_CCW2_nolicks == 1){
-        DE_CCW2 <- nrow(subset_dfCCW2[which(subset_dfCCW2$Corner == 2 & subset_dfCCW2$NosepokeNumber > 0),])
+    if (is.na(correct_corner_CCW2_nolicks)){
+      DE_CCW2 <- NA
+    }
+    else if (correct_corner_CCW2_nolicks == 1){
+      DE_CCW2 <- nrow(subset_dfCCW2[which(subset_dfCCW2$Corner == 2 & subset_dfCCW2$NosepokeNumber > 0),])
     } else if (correct_corner_CCW2_nolicks == 2){
-        DE_CCW2 <- nrow(subset_dfCCW2[which(subset_dfCCW2$Corner == 3 & subset_dfCCW2$NosepokeNumber > 0),])
+      DE_CCW2 <- nrow(subset_dfCCW2[which(subset_dfCCW2$Corner == 3 & subset_dfCCW2$NosepokeNumber > 0),])
     } else if (correct_corner_CCW2_nolicks == 3){
-        DE_CCW2 <- nrow(subset_dfCCW2[which(subset_dfCCW2$Corner == 4 & subset_dfCCW2$NosepokeNumber > 0),])
+      DE_CCW2 <- nrow(subset_dfCCW2[which(subset_dfCCW2$Corner == 4 & subset_dfCCW2$NosepokeNumber > 0),])
     } else if (correct_corner_CCW2_nolicks == 4){
-        DE_CCW2 <- nrow(subset_dfCCW2[which(subset_dfCCW2$Corner == 1 & subset_dfCCW2$NosepokeNumber > 0),])
+      DE_CCW2 <- nrow(subset_dfCCW2[which(subset_dfCCW2$Corner == 1 & subset_dfCCW2$NosepokeNumber > 0),])
     }
     # Place Error - CCW2
     counts[[length(counts) + 1]] <- (nrow(subset_dfCCW2[which(subset_dfCCW2$CornerCondition == "Incorrect" & subset_dfCCW2$NosepokeNumber > 0),])-DE_CCW2)/nrow(subset_dfCCW2[which(subset_dfCCW2$NosepokeNumber > 0),])

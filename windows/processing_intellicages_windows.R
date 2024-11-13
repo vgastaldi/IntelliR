@@ -1,4 +1,4 @@
-## Last modified: 07.09.2024
+## Last modified: 13.11.2024
 #### Loading files #####
 set.seed(0)
 options(digits = 5,scipen = 20)
@@ -603,7 +603,7 @@ results_df <- merge(results_df,results,by.x = 1,by.y = 1,all.x = T)
 # Get the names of all objects that will be used for this variable
 visits_objects <- ls(pattern = "_visits$")
 # Reorder to follow the challenges
-visits_objects <- visits_objects[c(3,4)]
+visits_objects <- visits_objects[c(1,2,3,4)]
 visits_objects[!is.na(visits_objects)] -> visits_objects  
 
 # Create a vector of column names for the results data frame
