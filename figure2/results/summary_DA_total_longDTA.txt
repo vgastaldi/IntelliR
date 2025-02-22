@@ -1,0 +1,12 @@
+Challenge	Group	Number_DAs	Success_DAs	Percentage_successful_DAs
+CCW1	Corn_Oil	1763	464	26.32
+CCW2	Corn_Oil	1793	469	26.16
+CW1	Corn_Oil	1750	622	35.54
+CW2	Corn_Oil	1832	641	34.99
+ELM1A	Corn_Oil	2590	719	27.76
+ELM1R	Corn_Oil	2807	741	26.4
+ELM2A	Corn_Oil	2435	773	31.75
+ELM2R	Corn_Oil	2152	710	32.99
+MRL	Corn_Oil	2388	734	30.74
+PL	Corn_Oil	2406	896	37.24
+RL	Corn_Oil	2928	890	30.4
