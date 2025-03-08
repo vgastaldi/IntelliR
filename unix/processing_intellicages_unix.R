@@ -2295,8 +2295,8 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
           counts[[length(counts) + 1]] <- kruskal.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit)$p.value
           counts[[length(counts) + 1]] <- "Kruskal-Wallis chi-square"
           counts[[length(counts) + 1]] <- as.numeric(kruskal.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit)$statistic)
-          counts[[length(counts) + 1]] <- "Epsilon-squared"
           
+          counts[[length(counts) + 1]] <- "Epsilon-squared"
           # Extract the test statistic
           H <- kruskal.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit)$statistic
           
@@ -2304,9 +2304,9 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
           n <- sum(table(results_df[, "Group"]),na.rm = T)
           
           # Calculate Epsilon-squared
-          epsilon_squared_calc <- 1 - (n - 1) * H / (n * (n + 1))
+          counts[[length(counts) + 1]] <- H / ((n^2 - 1) / (n + 1))
           
-          counts[[length(counts) + 1]] <- epsilon_squared_calc <- 1 - (n - 1) * H / (n * (n + 1))
+          # Prepare the CI
           epsilon_squared_func <- function(data, indices) {
             # Extract the resampled data
             data_resampled <- data[indices, ]
@@ -2317,11 +2317,13 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
             # Extract the test statistic
             H <- result$statistic
             
-            # Calculate the sample size
-            n <- sum(table(data_resampled[, "Group"]))
+            # Calculate the total sample size
+            n <- nrow(data_resampled)
             
-            # Calculate Epsilon-squared
-            1 - (n - 1) * H / (n * (n + 1))
+            # Calculate Epsilon-squared using the correct formula
+            epsilon_squared <- H / ((n^2 - 1) / (n + 1))
+            
+            return(epsilon_squared)
           }
           calculated_ep_squared <- boot(results_df,epsilon_squared_func, R = 1000)
           ci <- boot.ci(calculated_ep_squared, type = "perc")
@@ -2716,8 +2718,8 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
           counts[[length(counts) + 1]] <- kruskal.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit)$p.value
           counts[[length(counts) + 1]] <- "Kruskal-Wallis chi-square"
           counts[[length(counts) + 1]] <- as.numeric(kruskal.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit)$statistic)
-          counts[[length(counts) + 1]] <- "Epsilon-squared"
           
+          counts[[length(counts) + 1]] <- "Epsilon-squared"
           # Extract the test statistic
           H <- kruskal.test(results_df[,variable]~results_df[,"Group"], data=results_df, na.action=na.omit)$statistic
           
@@ -2725,9 +2727,9 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
           n <- sum(table(results_df[, "Group"]),na.rm = T)
           
           # Calculate Epsilon-squared
-          epsilon_squared_calc <- 1 - (n - 1) * H / (n * (n + 1))
+          counts[[length(counts) + 1]] <- H / ((n^2 - 1) / (n + 1))
           
-          counts[[length(counts) + 1]] <- epsilon_squared_calc <- 1 - (n - 1) * H / (n * (n + 1))
+          # Prepare the CI
           epsilon_squared_func <- function(data, indices) {
             # Extract the resampled data
             data_resampled <- data[indices, ]
@@ -2738,11 +2740,13 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
             # Extract the test statistic
             H <- result$statistic
             
-            # Calculate the sample size
-            n <- sum(table(data_resampled[, "Group"]))
+            # Calculate the total sample size
+            n <- nrow(data_resampled)
             
-            # Calculate Epsilon-squared
-            1 - (n - 1) * H / (n * (n + 1))
+            # Calculate Epsilon-squared using the correct formula
+            epsilon_squared <- H / ((n^2 - 1) / (n + 1))
+            
+            return(epsilon_squared)
           }
           calculated_ep_squared <- boot(results_df,epsilon_squared_func, R = 1000)
           ci <- boot.ci(calculated_ep_squared, type = "perc")
