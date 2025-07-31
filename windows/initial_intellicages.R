@@ -4,7 +4,7 @@
 # Modified: 13.08.2024
 #### Required packages ####
 if (grepl("Windows", Sys.info()["sysname"])) {
-  required_packages <- c("dplyr","openxlsx","ggplot2","reshape2","tcltk","multcomp","coin","dunn.test","car","tidyr","effectsize","emmeans","boot","rstatix","conover.test")
+  required_packages <- c("dplyr","openxlsx","ggplot2","reshape2","tcltk","multcomp","coin","dunn.test","car","tidyr","effectsize","emmeans","boot","rstatix","conover.test","shiny")
   new_packages <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]
   if(length(new_packages)) install.packages(new_packages)
   if (packageVersion("ggplot2") < "3.4.2") {
@@ -28,7 +28,7 @@ if (grepl("Windows", Sys.info()["sysname"])) {
   library(conover.test)
   rm(new_packages,required_packages)
 } else {
-  required_packages <- c("dplyr","openxlsx","ggplot2","reshape2","tcltk","multcomp","coin","dunn.test","car","tidyr","effectsize","emmeans","boot","rstatix","conover.test")
+  required_packages <- c("dplyr","openxlsx","ggplot2","reshape2","tcltk","multcomp","coin","dunn.test","car","tidyr","effectsize","emmeans","boot","rstatix","conover.test","shiny")
   new_packages <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]
   if(length(new_packages)) install.packages(new_packages)
   if (packageVersion("ggplot2") < "3.4.2") {

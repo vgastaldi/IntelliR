@@ -7,7 +7,7 @@ options(digits = 5,scipen = 20)
 read.delim(paste(project_folder,"/",project,"/","Challenge_1/Visit.txt",sep="")) -> PL_visits
 read.delim(paste(project_folder,"/",project,"/","Challenge_1/Nosepoke.txt",sep="")) -> PL_nosepokes
 
-#### Place Learning ####
+#### Reversal Learning ####
 read.delim(paste(project_folder,"/",project,"/","Challenge_2/Visit.txt",sep="")) -> RL_visits
 read.delim(paste(project_folder,"/",project,"/","Challenge_2/Nosepoke.txt",sep="")) -> RL_nosepokes
 
