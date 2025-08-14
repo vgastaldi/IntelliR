@@ -1,7 +1,7 @@
 #### IntelliCage data processing ####
 ## Author: Vinicius Daguano Gastaldi
 ## This script is required to start the file processing. A new script will be called depending on the operational system.
-# Modified: 13.08.2024
+# Modified: 14.08.2025
 #### Required packages ####
 if (grepl("Windows", Sys.info()["sysname"])) {
   required_packages <- c("dplyr","openxlsx","ggplot2","reshape2","tcltk","multcomp","coin","dunn.test","car","tidyr","effectsize","emmeans","boot","rstatix","conover.test","shiny")
@@ -121,12 +121,12 @@ if (grepl("Windows", Sys.info()["sysname"])) {
     ),
     fluidRow(
       column(12,
-             fileInput("unblinding_file", "Select unblinding file")
+             fileInput("unblinding_file", "Click to select unblinding file")
       )
     ),
     fluidRow(
       column(12,
-             actionButton("select_file", "Select IntelliCage script")
+             actionButton("select_file", "Click to select IntelliCage script")
       )
     ),
     fluidRow(
@@ -249,12 +249,12 @@ if (grepl("Windows", Sys.info()["sysname"])) {
     ),
     fluidRow(
       column(12,
-             fileInput("unblinding_file", "Select unblinding file")
+             fileInput("unblinding_file", "Click to select unblinding file")
       )
     ),
     fluidRow(
       column(12,
-             actionButton("intellicage_script_button", "Select IntelliCage script")
+             actionButton("intellicage_script_button", "Click to select IntelliCage script")
       )
     ),
     fluidRow(
@@ -265,7 +265,7 @@ if (grepl("Windows", Sys.info()["sysname"])) {
   )
   
   server <- function(input, output, session) {
-
+    
     project <<- NULL
     project_folder <<- NULL
     results_folder <<- NULL

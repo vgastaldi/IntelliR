@@ -1,4 +1,4 @@
-## Last modified: 13.11.2024
+## Last modified: 14.08.2025
 #### Loading files #####
 set.seed(0)
 options(digits = 5,scipen = 20)
@@ -2057,10 +2057,13 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
           counts[[length(counts) + 1]] <- t.test(results_df[,variable] ~ results_df[,"Group"],var.equal = F)$p.value
           counts[[length(counts) + 1]] <- "T statistic"
           counts[[length(counts) + 1]] <- t.test(results_df[,variable] ~ results_df[,"Group"],var.equal = T)$statistic
-          counts[[length(counts) + 1]] <- "Cohen's d"
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(results_df[,variable] ~ results_df[,"Group"], data = results_df,pooled_sd = F)$Cohens_d
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(results_df[,variable] ~ results_df[,"Group"], data = results_df,pooled_sd = F)$CI_high
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(results_df[,variable] ~ results_df[,"Group"], data = results_df,pooled_sd = F)$CI_low
+          counts[[length(counts) + 1]] <- "Glass' delta"    
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(results_df[, variable] ~ results_df[, "Group"],
+                                                                  data = results_df, ci = 0.95, alternative = "two.sided")$Glass_delta
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(results_df[, variable] ~ results_df[, "Group"],
+                                                                  data = results_df, ci = 0.95, alternative = "two.sided")$CI_high
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(results_df[, variable] ~ results_df[, "Group"],
+                                                                  data = results_df, ci = 0.95, alternative = "two.sided")$CI_low
         }
       } else {
         if (counts[[10]] > 0.05){
@@ -2274,19 +2277,19 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
           counts[[length(counts) + 1]] <- comparison$p.adj[3]
           counts[[length(counts) + 1]] <- comparison$estimate[3]
           # Obtain effect sizes for the post-hoc test
-          counts[[length(counts) + 1]] <- "Cohen's d"
+          counts[[length(counts) + 1]] <- "Glass' delta"    
           results_df[grepl("A|B",results_df$Group),] -> ef_df
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$Glass_delta
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$CI_high
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$CI_low
           results_df[grepl("A|C",results_df$Group),] -> ef_df
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$Glass_delta
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$CI_high
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$CI_low
           results_df[grepl("B|C",results_df$Group),] -> ef_df
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$Glass_delta
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$CI_high
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$CI_low
         }
       } else {
         # If at least one group is not normally distributed but the variances are equal
@@ -2685,31 +2688,31 @@ if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 2){
           counts[[length(counts) + 1]] <- comparison$p.adj[6]
           counts[[length(counts) + 1]] <- comparison$estimate[7]
           # Obtain effect sizes for the post-hoc test
-          counts[[length(counts) + 1]] <- "Cohen's d"
+          counts[[length(counts) + 1]] <- "Glass' delta"
           results_df[grepl("A|B",results_df$Group),] -> ef_df
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$Glass_delta
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$CI_high
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$CI_low
           results_df[grepl("A|C",results_df$Group),] -> ef_df
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$Glass_delta
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$CI_high
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$CI_low
           results_df[grepl("A|D",results_df$Group),] -> ef_df
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$Glass_delta
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$CI_high
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$CI_low
           results_df[grepl("B|C",results_df$Group),] -> ef_df
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$Glass_delta
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$CI_high
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$CI_low
           results_df[grepl("B|D",results_df$Group),] -> ef_df
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$Glass_delta
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$CI_high
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$CI_low
           results_df[grepl("C|D",results_df$Group),] -> ef_df
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$Cohens_d
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_high
-          counts[[length(counts) + 1]] <- effectsize::cohens_d(ef_df[,variable], ef_df[,"Group"], data = results_df, paired = F)$CI_low
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$Glass_delta
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$CI_high
+          counts[[length(counts) + 1]] <- effectsize::glass_delta(ef_df[,variable], ef_df[,"Group"], data = results_df, ci = 0.95, alternative = "two.sided")$CI_low
         }
       } else {
         # If at least one group is not normally distributed but the variances are equal
@@ -2981,8 +2984,8 @@ openxlsx::write.xlsx(all_comparisons_set_EM,"all_comparisons_set_EM.xlsx")
 
 #### Plotting ####
 ## Going to the correct folder
-dir.create(paste(results_folder,project,"figures",sep = "\\"))
-setwd(paste(results_folder,project,"figures",sep = "\\"))
+dir.create(paste(results_folder,project,"figures",sep = "/"))
+setwd(paste(results_folder,project,"figures",sep = "/"))
 
 if(length(grep("^group[0-9]+_name$", ls(envir = globalenv()))) == 4){
   colors <- c(group1_color,group2_color,group3_color,group4_color)
