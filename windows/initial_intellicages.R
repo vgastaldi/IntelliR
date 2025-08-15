@@ -1,7 +1,7 @@
 #### IntelliCage data processing ####
 ## Author: Vinicius Daguano Gastaldi
 ## This script is required to start the file processing. A new script will be called depending on the operational system.
-# Modified: 14.08.2025
+# Modified: 15.08.2025
 #### Required packages ####
 if (grepl("Windows", Sys.info()["sysname"])) {
   required_packages <- c("dplyr","openxlsx","ggplot2","reshape2","tcltk","multcomp","coin","dunn.test","car","tidyr","effectsize","emmeans","boot","rstatix","conover.test","shiny")
@@ -125,8 +125,10 @@ if (grepl("Windows", Sys.info()["sysname"])) {
       )
     ),
     fluidRow(
-      column(12,
-             actionButton("select_file", "Click to select IntelliCage script")
+      column(
+        12,
+        tags$p("Select the processing_intellicages R script that matches your operational system."),
+        actionButton("intellicage_script_button", "Click to select IntelliCage script")
       )
     ),
     fluidRow(
@@ -167,13 +169,25 @@ if (grepl("Windows", Sys.info()["sysname"])) {
     
     output$group_inputs <- renderUI({
       num_groups <- input$num_groups
-      lapply(seq_len(num_groups), function(i) {
+      
+      tagList(lapply(seq_len(num_groups), function(i) {
+        name_label <- if (i == 1) {
+          tagList(
+            paste0("Name of group ", i),
+            tags$br(),
+            tags$small("Please use your control group as Group 1", style = "color:#777;")
+          )
+        } else {
+          paste0("Name of group ", i)
+        }
+        
         fluidRow(
-          column(6, textInput(paste0("group", i, "_name"), paste0("Name of group ", i))),
+          column(6, textInput(paste0("group", i, "_name"), label = name_label)),
           column(6, textInput(paste0("group", i, "_color"), paste0("Color of group ", i)))
         )
-      })
+      }))
     })
+    
     
     observe({
       num_groups <- input$num_groups
@@ -253,8 +267,10 @@ if (grepl("Windows", Sys.info()["sysname"])) {
       )
     ),
     fluidRow(
-      column(12,
-             actionButton("intellicage_script_button", "Click to select IntelliCage script")
+      column(
+        12,
+        tags$p("Select the processing_intellicages R script that matches your operational system."),
+        actionButton("intellicage_script_button", "Click to select IntelliCage script")
       )
     ),
     fluidRow(
@@ -296,13 +312,26 @@ if (grepl("Windows", Sys.info()["sysname"])) {
     
     output$group_inputs <- renderUI({
       num_groups <- input$num_groups
-      lapply(seq_len(num_groups), function(i) {
+      
+      tagList(lapply(seq_len(num_groups), function(i) {
+        name_label <- if (i == 1) {
+          tagList(
+            paste0("Name of group ", i),
+            tags$br(),
+            tags$small("Please use your control group as Group 1", style = "color:#777;")
+          )
+        } else {
+          paste0("Name of group ", i)
+        }
+        
         fluidRow(
-          column(6, textInput(paste0("group", i, "_name"), paste0("Name of group ", i))),
+          column(6, textInput(paste0("group", i, "_name"), label = name_label)),
           column(6, textInput(paste0("group", i, "_color"), paste0("Color of group ", i)))
         )
-      })
+      }))
     })
+    
+    
     
     observe({
       num_groups <- input$num_groups
