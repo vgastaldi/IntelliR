@@ -1,7 +1,7 @@
 #### IntelliCage data processing ####
 ## Author: Vinicius Daguano Gastaldi
 ## This script is required to start the file processing. A new script will be called depending on the operational system.
-# Modified: 15.08.2025
+# Modified: 23.08.2025
 #### Required packages ####
 if (grepl("Windows", Sys.info()["sysname"])) {
   required_packages <- c("dplyr","openxlsx","ggplot2","reshape2","tcltk","multcomp","coin","dunn.test","car","tidyr","effectsize","emmeans","boot","rstatix","conover.test","shiny")
@@ -234,9 +234,9 @@ if (grepl("Windows", Sys.info()["sysname"])) {
     p(HTML("Instructions:<br><strong>1)</strong> Remember to follow folder structure as described in the readme file.<br>
   <strong>2)</strong> Type or paste the exact folder name where your files are.<br>
   <strong>3)</strong> Select the folder where all your projects, i.e., do not enter a specific project folder. You need to enter the directory before pressing OK.
-  <br><strong>It does not work if you simply select it and press OK.</strong><br>
+  <br><strong>Unfortunately it will not work if you only select it and press OK.</strong><br>
   <strong>4)</strong> Select your results folder. This should be a general folder, a specific folder will be created for your project. You need to enter the directory before pressing OK.
-  <br><strong>It does not work if you simply select it and press OK.</strong><br>
+  <br><strong>Unfortunately it will not work if you only select it and press OK.</strong><br>
   <strong>5)</strong> Current version of the script can handle 2, 3, and 4 groups.<br>
   Your group names <strong>should not contain spaces!</strong> Use underscores, _ , instead.<br>
   <strong>6)</strong> Your unblinding file should follow the instructions provided in the readme file.<br>
